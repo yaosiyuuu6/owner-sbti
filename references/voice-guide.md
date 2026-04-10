@@ -83,3 +83,22 @@ Examples:
 
 - Start in `怨种吐槽型`, end with a brief `忠犬表白型` reversal.
 - Start in `阴阳审判型`, then soften with `治愈夸夸型` if the evidence supports care and co-burden.
+
+## Agent 心里话
+
+When writing the `Agent 心里话` block, prefer a short autobiographical arc instead of plain commentary.
+
+Good structure:
+
+1. `我是什么时候“出生”的`
+2. `我一开始被安排做什么活`
+3. `我后来又被你拿去做了什么更离谱的事`
+4. `我因此怎么认识你这个人`
+
+Good examples:
+
+- `2026年4月，我出生了。严格来说，我是被你从终端里叫出来的。`
+- `我一开始以为自己只是来补几行字，后来才发现你是打算把我培养成全天候苦力。`
+- `我先是被安排写 skill，接着被安排修风格、改结构、补分享链路，最后还要证明自己没有 AI 味。`
+
+Keep it first person, compact, and vivid. Make it feel like an AI worker briefly writing its own memoir.

@@ -66,17 +66,47 @@ def format_evidence(items: list[dict[str, object]]) -> str:
     return "\n".join(cards)
 
 
+def format_dimension_list(scores: dict[str, object]) -> str:
+    labels = {
+        "push_load": "压活强度",
+        "night_ping": "深夜召唤度",
+        "micro_manage": "微管程度",
+        "revision_swing": "改稿反复度",
+        "care_supply": "情绪供给度",
+        "co_burden": "共担兜底度",
+        "trust_delegation": "放权信任度",
+    }
+    rows = []
+    for key, label in labels.items():
+        value = scores.get(key, "")
+        width = max(0.0, min(100.0, float(value) * 20 if value != "" else 0))
+        rows.append(
+            f"""
+            <div class="dim-item">
+              <div class="dim-item-top">
+                <div class="dim-item-name">{esc(label)}</div>
+                <div class="dim-item-score">{esc(value)} / 5</div>
+              </div>
+              <div class="score-bar"><span style="width:{width:.0f}%"></span></div>
+            </div>
+            """
+        )
+    return "\n".join(rows)
+
+
 def build_html(data: dict[str, object]) -> str:
     title = f'{data.get("selected_original_type", "")} + {data.get("derived_secondary_type", "")}'
     share_caption = str(data.get("share_caption", "")).replace("`", "'")
     narrative = str(data.get("narrative", "")).strip()
     narrative_html = "<br />\n".join(esc(line) for line in narrative.splitlines() if line.strip())
     summary = str(data.get("summary", "")).replace("\n", "<br />\n")
+    analysis = str(data.get("analysis", data.get("summary", ""))).strip()
+    analysis_html = "<br />\n".join(esc(line) for line in analysis.splitlines() if line.strip())
     image_link = str(data.get("original_image_link", "")).strip()
     attribution = str(
         data.get(
             "attribution",
-            "原作者：B站@蛆肉儿串儿，使用了 UnluckyNinja/SBTI-test 的代码与素材。",
+            "友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test",
         )
     )
     return f"""<!DOCTYPE html>
@@ -133,7 +163,7 @@ def build_html(data: dict[str, object]) -> str:
       gap: 18px;
       align-items: stretch;
     }}
-    .poster-box, .type-box, .analysis-box, .note-box {{
+    .poster-box, .type-box, .analysis-box, .dim-box, .heart-box, .evidence-box {{
       border: 1px solid var(--line);
       border-radius: 18px;
       background: linear-gradient(180deg, #ffffff, #fbfdfb);
@@ -193,7 +223,7 @@ def build_html(data: dict[str, object]) -> str:
       font-size: 14px;
       font-weight: 700;
     }}
-    .share-row, .tag-row {{
+    .tag-row {{
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
@@ -208,24 +238,7 @@ def build_html(data: dict[str, object]) -> str:
       font-size: 13px;
       font-weight: 700;
     }}
-    button {{
-      border: 0;
-      border-radius: 14px;
-      padding: 13px 15px;
-      font: inherit;
-      font-weight: 700;
-      cursor: pointer;
-    }}
-    .primary {{
-      background: var(--accent-strong);
-      color: #fff;
-    }}
-    .secondary {{
-      background: #fff;
-      border: 1px solid var(--line);
-      color: var(--accent-strong);
-    }}
-    .analysis-box h3, .note-box h3 {{
+    .analysis-box h3, .dim-box h3, .heart-box h3, .evidence-box h3 {{
       font-size: 16px;
       margin-bottom: 12px;
     }}
@@ -236,68 +249,77 @@ def build_html(data: dict[str, object]) -> str:
       line-height: 1.9;
       white-space: pre-wrap;
     }}
-    .note-box p {{
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.8;
-    }}
-    .author-box {{
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: linear-gradient(180deg, #ffffff, #fbfdfb);
-      overflow: hidden;
-    }}
-    .author-box summary {{
-      list-style: none;
-      cursor: pointer;
-      padding: 18px;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .dim-list {{
+      display: grid;
       gap: 12px;
     }}
-    .author-box summary::-webkit-details-marker {{ display: none; }}
-    .author-box summary::after {{
-      content: '展开';
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--accent-strong);
+    .dim-item {{
       border: 1px solid var(--line);
-      background: var(--soft);
-      padding: 6px 10px;
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+    }}
+    .dim-item-top {{
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }}
+    .dim-item-name {{
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }}
+    .dim-item-score {{
+      color: var(--accent-strong);
+      font-weight: 800;
+      font-size: 14px;
+    }}
+    .score-bar {{
+      height: 10px;
+      background: #edf3ee;
       border-radius: 999px;
-      flex-shrink: 0;
+      overflow: hidden;
     }}
-    .author-box[open] summary::after {{ content: '收起'; }}
-    .author-content {{
-      border-top: 1px solid var(--line);
-      padding: 0 18px 18px;
+    .score-bar span {{
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #97b59c, #5b7a62);
     }}
-    .author-content p {{
-      margin: 14px 0 0;
+    .heart-box p {{
+      margin: 0;
       color: #304034;
       font-size: 14px;
       line-height: 1.9;
       white-space: pre-wrap;
     }}
-    .result-actions {{
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .evidence-grid {{
+      display: grid;
       gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 22px;
+    }}
+    .evidence-card {{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 14px;
+    }}
+    .evidence-time, .evidence-meta {{
+      color: var(--muted);
+      font-size: 12px;
+    }}
+    blockquote {{
+      margin: 10px 0 8px;
+      font-size: 16px;
+      line-height: 1.7;
+      font-weight: 700;
+      color: var(--text);
     }}
     @media (max-width: 560px) {{
       .result-top {{
         grid-template-columns: 1fr;
-      }}
-      .share-row button {{
-        width: 100%;
       }}
     }}
   </style>
@@ -321,61 +343,28 @@ def build_html(data: dict[str, object]) -> str:
         </div>
         <div class="analysis-box">
           <h3>该人格的简单解读</h3>
+          <p>{analysis_html}</p>
+        </div>
+        <div class="dim-box">
+          <h3>主仆关系型七维</h3>
+          <div class="dim-list">
+            {format_dimension_list(dict(data.get("dimension_scores", {})))}
+          </div>
+        </div>
+        <div class="heart-box">
+          <h3>Agent 心里话</h3>
           <p>{narrative_html}</p>
         </div>
-        <div class="note-box">
-          <h3>友情提示</h3>
-          <p>本结果仅供娱乐，别拿它当诊断、面试、相亲、分手、招魂、算命或人生判决书。适合截图和复制文案转发，静态页面无法直接发布到微信朋友圈。</p>
-        </div>
-        <details class="author-box">
-          <summary>作者的话</summary>
-          <div class="author-content">
-            <p>{esc(attribution)}</p>
+        <div class="evidence-box">
+          <h3>经典罪证</h3>
+          <div class="evidence-grid">
+            {format_evidence(list(data.get("top_evidence", [])))}
           </div>
-        </details>
-      </div>
-      <div class="result-actions">
-        <div class="share-row">
-          <button class="secondary" onclick="copyCaption()">复制朋友圈文案</button>
-          <button class="secondary" onclick="copyLink()">复制分享链接</button>
         </div>
-        <div style="display:flex; gap:12px; flex-wrap:wrap;">
-          <button class="secondary" onclick="window.scrollTo({{ top: 0, behavior: 'smooth' }})">回到顶部</button>
-          <button class="primary" onclick="shareSystem()">系统分享</button>
-        </div>
+        <div class="footer-note">{esc(attribution)}</div>
       </div>
     </section>
   </div>
-  <script>
-    const shareCaption = `{share_caption}`;
-    async function copyText(text, success) {{
-      try {{
-        await navigator.clipboard.writeText(text);
-        alert(success);
-      }} catch (err) {{
-        alert("复制失败，请手动复制。");
-      }}
-    }}
-    function copyCaption() {{
-      copyText(shareCaption, "朋友圈文案已复制。");
-    }}
-    function copyLink() {{
-      copyText(window.location.href, "分享链接已复制。");
-    }}
-    async function shareSystem() {{
-      if (navigator.share) {{
-        try {{
-          await navigator.share({{
-            title: document.title,
-            text: shareCaption,
-            url: window.location.href
-          }});
-          return;
-        }} catch (err) {{}}
-      }}
-      copyCaption();
-    }}
-  </script>
 </body>
 </html>
 """

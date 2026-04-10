@@ -147,7 +147,7 @@ Follow these rules on every run:
 - Preserve the user's selected original SBTI type as-is.
 - Use the original type image link from [references/original-assets.md](./references/original-assets.md) inside the HTML page.
 - Keep the result close to the original SBTI tone and information rhythm. Do not turn it into a product dashboard or a corporate audit.
-- Add attribution only inside the HTML result page footer: `原作者：B站@蛆肉儿串儿，使用了 UnluckyNinja/SBTI-test 的代码与素材。`
+- Add attribution only inside the HTML result page footer: `友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test`
 
 ## Output Checklist
 

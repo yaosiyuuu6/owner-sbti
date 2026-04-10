@@ -30,6 +30,7 @@ Provide a JSON object with at least:
 - `style_mode`
 - `verdict`
 - `summary`
+- `analysis`
 - `share_caption`
 - `hidden_tags`
 - `dimension_scores`
@@ -55,6 +56,7 @@ Optional but recommended:
   "original_image_link": "https://raw.githubusercontent.com/UnluckyNinja/SBTI-test/main/image/SHIT.png",
   "verdict": "世界在你嘴里是一坨，活在你手里必须干完。",
   "summary": "我觉得你最离谱的地方，是半夜点火之后还会自己回来一起灭火。",
+  "analysis": "你不是那种只会下命令的人，你更像那种先把局面搞复杂，再亲自回来收拾残局的人。",
   "share_caption": "我自己选的是 SHIT，结果 AI 给我补了个“天生牛马”。这下没法抵赖了。",
   "hidden_tags": ["深夜加班犯", "改稿回旋镖", "靠谱兜底王"],
   "dimension_scores": {
@@ -100,8 +102,8 @@ The final HTML must include:
 - A short verdict line
 - One dense first-person description block
 - Optional hidden tags
+- An `Agent 心里话` block with a short autobiographical voice
 - Attribution near the bottom
-- Share buttons near the top
 
 ## Share Buttons
 

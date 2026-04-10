@@ -91,10 +91,10 @@ def main() -> None:
 
     html_text = html_out.read_text(encoding="utf-8")
     md_text = md_out.read_text(encoding="utf-8")
-    if "系统分享" not in html_text or "复制朋友圈文案" not in html_text:
-        fail("Generated HTML is missing share controls")
     if data["derived_secondary_type"] not in html_text:
         fail("Generated HTML is missing the secondary type")
+    if data["attribution"] not in html_text:
+        fail("Generated HTML is missing attribution")
     if data["verdict"] not in md_text:
         fail("Generated Markdown is missing the verdict")
     ok("Generated outputs contain expected content")

@@ -39,6 +39,6 @@ Base repository:
 
 ## Attribution
 
-Always include this line in the final answer:
+Always include this line inside the HTML page:
 
-`原作者：B站@蛆肉儿串儿，使用了 UnluckyNinja/SBTI-test 的代码与素材。`
+`友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test`
