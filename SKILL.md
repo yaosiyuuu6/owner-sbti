@@ -9,10 +9,12 @@ description: Evaluate an owner or manager from the agent's accessible history an
 
 Use this skill to produce a “主人审判结果” that feels as close as possible to the original SBTI result page, but is driven by evidence from the agent's accessible history and written in the agent's first-person voice.
 
+For this skill, “accessible history” means the broadest history the runtime can actually reach, not just the current visible context window.
+
 Keep the flow fixed:
 
 1. Confirm the user's self-selected original SBTI type.
-2. Automatically inspect the agent's own accessible records and extract evidence.
+2. Automatically inspect the agent's own accessible records across the fullest available history and extract evidence.
 3. Derive only the secondary “主仆关系型” type.
 4. Write the report in first person with a clear style mode.
 5. Output `人格 + 一句话描述 + 结果链接`, with the image embedded inside the HTML result page.
@@ -34,12 +36,13 @@ If `selected_original_type` is missing, ask for it. Do not infer the original SB
 
 Do not ask the user to manually collect evidence if the agent can already inspect enough history on its own.
 
-Default evidence sources should be:
+Default evidence sources should be searched in this order:
 
-- current thread history
-- prior messages available in the active environment
+- the full accessible conversation or thread history
+- prior messages and archived turns available in the runtime
 - local files or work artifacts already visible to the agent
 - any existing notes or traces already accessible in the workspace
+- the current visible context only if broader history is not exposed
 
 Only ask the user for extra materials if both of these are true:
 
@@ -53,14 +56,14 @@ Only ask the user for extra materials if both of these are true:
 Every correct run of this skill must follow exactly this order:
 
 1. Ask the user for their original SBTI type if it is missing.
-2. Automatically mine the agent's accessible records for evidence.
+2. Automatically mine the agent's accessible records for evidence, preferring the full reachable history over only the current context.
 3. Produce the final delivery without asking the user to assemble evidence.
 
-Do not replace step 2 with “please send me your records” unless the environment truly exposes no usable history.
+Do not replace step 2 with “please send me your records” unless the environment truly exposes no usable history beyond the current context.
 
 ### 1. Normalize Evidence
 
-Turn accessible records and any optional extra materials into a compact evidence list. For each evidence item, capture:
+Turn accessible records and any optional extra materials into a compact evidence list. Prefer evidence from the full reachable history before falling back to whatever is currently visible. For each evidence item, capture:
 
 - `id`
 - `source`
@@ -160,7 +163,8 @@ Follow these rules on every run:
 - Keep all heavy claims evidence-backed.
 - Mark uncertain inference as inference.
 - Preserve the user's selected original SBTI type as-is.
-- Ask for the original SBTI type, but do not ask for evidence if history is already accessible.
+- Ask for the original SBTI type, but do not ask for evidence if broader history is already accessible.
+- Do not treat the current context window as the whole record when more history is reachable.
 - Use the original type image link from [references/original-assets.md](./references/original-assets.md) inside the HTML page.
 - Keep the result close to the original SBTI tone and information rhythm. Do not turn it into a product dashboard or a corporate audit.
 - Add attribution only inside the HTML result page footer: `友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test`
