@@ -23,6 +23,7 @@ Default behavior:
 
 Do not ask the user to manually provide evidence if the agent can already inspect enough history in the active environment.
 Do not stop at the current context if the runtime can access older same-user threads or broader workspace traces.
+If broader same-user thread history is available only with permission, ask for that permission before continuing.
 
 Optional behavior if files are explicitly requested:
 
@@ -46,6 +47,7 @@ No matter which agent runtime is used, keep these rules fixed:
 - The user chooses the original SBTI type.
 - The agent must first mine its own accessible history for evidence.
 - The agent should prefer all accessible same-user threads, not just the current visible context.
+- If broader same-user thread history is permission-gated, the agent should request access instead of silently downgrading to the current context.
 - The agent derives only the secondary relationship type.
 - The report voice stays first person from the agent.
 - Strong claims must be evidence-backed.
@@ -61,6 +63,7 @@ Use a prompt like this in non-Codex runtimes:
 Read SKILL.md, references/original-assets.md, references/relationship-types.md, and references/voice-guide.md.
 The user-selected original SBTI type is: <TYPE>.
 First inspect your own accessible history in this task and environment for evidence, starting with all accessible same-user threads rather than only the current context.
+If broader same-user thread history needs permission, ask for that permission first.
 Only ask for extra records if the accessible history is genuinely not enough.
 Generate one local HTML page from the bundled renderer, then return only:
 人格：

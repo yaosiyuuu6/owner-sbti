@@ -36,6 +36,8 @@ If `selected_original_type` is missing, ask for it. Do not infer the original SB
 
 Do not ask the user to manually collect evidence if the agent can already inspect enough history on its own.
 
+If the runtime requires extra permission to read broader same-user thread history, ask the user for that permission before continuing. Do not silently fall back to a narrower record if broader history is available behind a permission gate.
+
 Default evidence sources should be searched in this order:
 
 - all accessible same-user interaction data across all threads in the current runtime
@@ -60,6 +62,7 @@ Every correct run of this skill must follow exactly this order:
 3. Produce the final delivery without asking the user to assemble evidence.
 
 Do not replace step 2 with “please send me your records” unless the environment truly exposes no usable same-user history beyond the current context.
+If step 2 is blocked by a permission boundary, ask for permission first, then continue mining the broader history.
 
 ### 1. Normalize Evidence
 
@@ -165,6 +168,7 @@ Follow these rules on every run:
 - Preserve the user's selected original SBTI type as-is.
 - Ask for the original SBTI type, but do not ask for evidence if broader same-user thread history is already accessible.
 - Do not treat the current context window as the whole record when more same-user thread history is reachable.
+- If broader same-user thread history is reachable only with permission, request that permission before judging.
 - Use the original type image link from [references/original-assets.md](./references/original-assets.md) inside the HTML page.
 - Keep the result close to the original SBTI tone and information rhythm. Do not turn it into a product dashboard or a corporate audit.
 - Add attribution only inside the HTML result page footer: `友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test`

@@ -66,13 +66,14 @@ As long as the agent can read files and run Python 3 locally, it can use the ski
 1. Give the agent this skill folder or GitHub directory link.
 2. Tell it your original SBTI type.
 3. Let the agent automatically inspect all accessible threads first.
-4. Only provide extra records if the environment truly does not expose enough history.
-5. Let the agent produce:
+4. If broader thread history is behind a permission boundary, let the agent ask for permission first.
+5. Only provide extra records if the environment truly does not expose enough history.
+6. Let the agent produce:
    - one extra relationship type
    - one-sentence description
    - one local result page link
 
-The user should not have to manually prepare evidence in the normal case, and the agent should not stop at only the current context if older same-user thread history is reachable.
+The user should not have to manually prepare evidence in the normal case, and the agent should not stop at only the current context if older same-user thread history is reachable. If that broader history needs permission, the agent should ask for permission instead of pretending the narrower context is enough.
 
 ## Local Rendering
 
