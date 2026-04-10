@@ -17,9 +17,10 @@ Default behavior:
 1. Read `SKILL.md`.
 2. Read `references/original-assets.md`, `references/relationship-types.md`, and `references/voice-guide.md`.
 3. Ask for the user-selected original SBTI type if missing.
-4. Read the provided historical materials.
-5. Generate one local HTML result page.
-6. Return only `人格 + 描述 + 链接`.
+4. Read the agent's own accessible historical records first.
+5. Read any extra materials only if the user provided them or if the built-in history is not enough.
+6. Generate one local HTML result page.
+7. Return only `人格 + 描述 + 链接`.
 
 Optional behavior if files are explicitly requested:
 
@@ -41,11 +42,13 @@ python3 scripts/render_owner_sbti.py \
 No matter which agent runtime is used, keep these rules fixed:
 
 - The user chooses the original SBTI type.
+- The agent should first mine its own accessible history for evidence.
 - The agent derives only the secondary relationship type.
 - The report voice stays first person from the agent.
 - Strong claims must be evidence-backed.
 - The result should feel like the original SBTI page, not a neutral audit.
 - The final default answer should be concise enough to send directly in chat.
+- The user should not need to manually assemble “判词证据” when the agent can already inspect enough history itself.
 
 ## Recommended Prompt Skeleton
 
@@ -54,7 +57,8 @@ Use a prompt like this in non-Codex runtimes:
 ```text
 Read SKILL.md, references/original-assets.md, references/relationship-types.md, and references/voice-guide.md.
 The user-selected original SBTI type is: <TYPE>.
-Historical materials are attached or pasted below.
+First inspect your own accessible history in this task and environment for evidence.
+Use attached or pasted materials only as extra support when needed.
 Generate one local HTML page from the bundled renderer, then return only:
 人格：
 描述：

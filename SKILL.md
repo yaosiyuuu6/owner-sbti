@@ -1,18 +1,18 @@
 ---
 name: owner-sbti
-description: Evaluate an owner or manager from historical materials and generate a humorous first-person SBTI-style judgment with a user-selected original type, an agent-derived secondary type, and a concise result in the format “人格 + 一句话描述 + 结果链接”. Use when Codex or another local coding agent needs to turn chats, notes, task history, or work artifacts into a SBTI-like result that closely follows the tone and presentation rhythm of UnluckyNinja/SBTI-test while adding one extra agent-derived personality.
+description: Evaluate an owner or manager from accessible historical records and generate a humorous first-person SBTI-style judgment with a user-selected original type, an agent-derived secondary type, and a concise result in the format “人格 + 一句话描述 + 结果链接”. Use when Codex or another local coding agent needs to turn its own chat history, notes, task history, or work artifacts into a SBTI-like result that closely follows the tone and presentation rhythm of UnluckyNinja/SBTI-test while adding one extra agent-derived personality.
 ---
 
 # Owner Sbti
 
 ## Overview
 
-Use this skill to produce a “主人审判结果” that feels as close as possible to the original SBTI result page, but is driven by evidence from historical materials and written in the agent's first-person voice.
+Use this skill to produce a “主人审判结果” that feels as close as possible to the original SBTI result page, but is driven by evidence from the agent's accessible historical records and written in the agent's first-person voice.
 
 Keep the flow fixed:
 
 1. Confirm the user's self-selected original SBTI type.
-2. Read historical materials and extract evidence.
+2. Read accessible historical records and extract evidence.
 3. Derive only the secondary “主仆关系型” type.
 4. Write the report in first person with a clear style mode.
 5. Output `人格 + 一句话描述 + 结果链接`, with the image embedded inside the HTML result page.
@@ -28,17 +28,29 @@ Collect or infer these inputs before writing:
 - `owner_name`: Name or nickname for the person being judged.
 - `agent_name`: Name or persona of the speaking agent.
 - `selected_original_type`: User-selected original SBTI type. Do not guess it.
-- `materials`: Historical materials, such as chats, docs, notes, transcripts, or task traces.
+- `materials`: Optional extra materials, such as pasted chats, docs, notes, transcripts, or task traces.
 
 If `selected_original_type` is missing, ask for it. Do not infer the original SBTI type from evidence.
 
-If evidence is too thin to support a strong judgment, say so and request more material. Do not fabricate.
+By default, gather evidence from the agent's own accessible records first:
+
+- current thread history
+- prior messages in the same task when available
+- local notes or work artifacts already visible in the environment
+- files the user has already pointed at
+
+Do not ask the user to manually supply “判词证据” if the agent can already inspect enough history on its own.
+
+Ask for more material only when both of these are true:
+
+- accessible history is genuinely too thin
+- a stronger judgment would otherwise require fabrication
 
 ## Workflow
 
 ### 1. Normalize Evidence
 
-Turn raw materials into a compact evidence list. For each evidence item, capture:
+Turn accessible records and any extra materials into a compact evidence list. For each evidence item, capture:
 
 - `id`
 - `source`
@@ -114,23 +126,21 @@ A weak line is not:
 - purely analytic
 - unsupported by evidence
 
-### 6. Use Files Only As An Explicit Option
+### 6. Use Files Only As Needed
 
-Use [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py) to generate the local HTML result page. The message output stays short, but the final answer should include the HTML page link.
+Use [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py) to generate the HTML result page when a result link is needed. The chat response stays short, but the final answer should include the result-page link.
 
-If HTML is requested, pass it a JSON file that follows [references/report-spec.md](./references/report-spec.md). The renderer outputs:
+If HTML is requested, pass it a JSON file that follows [references/report-spec.md](./references/report-spec.md). The renderer should keep the page close to the original SBTI result-page rhythm:
 
 - mobile-first HTML
-- built-in share buttons
-- a screenshot-friendly poster section
-- share caption copy support
+- original type poster image
+- `该人格的简单解读`
+- `主仆关系型七维`
+- `Agent 心里话`
+- `经典罪证`
+- a small footer attribution line
 
-The “朋友圈分享” behavior must remain truthful:
-
-- Prefer `navigator.share()` when available.
-- Always include a `复制朋友圈文案` button.
-- Always include a `复制分享链接` button.
-- Optimize the top section for screenshot sharing because static HTML cannot directly publish to WeChat Moments.
+Do not add share buttons, `友情提示`, or a collapsible `作者的话` block unless the user explicitly asks for them again.
 
 Before handing off or installing the skill elsewhere, run [scripts/self_test.py](./scripts/self_test.py) to verify the local runtime and the bundled sample payload.
 
@@ -173,7 +183,7 @@ Before finishing, verify:
 
 ### scripts/
 
-- [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py): Render a report JSON file into a shareable HTML page and optional Markdown file.
+- [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py): Render a report JSON file into an HTML result page and optional Markdown file.
 - [scripts/self_test.py](./scripts/self_test.py): Run a dependency-free local self-check and regenerate the bundled sample outputs.
 - [scripts/validate_report_json.py](./scripts/validate_report_json.py): Validate that an agent-generated report JSON matches the expected portable schema.
 

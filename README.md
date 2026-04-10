@@ -1,8 +1,8 @@
 # owner-sbti
 
-An agent skill that turns historical materials into a SBTI-style owner judgment page.
+An agent skill that turns accessible historical records into a SBTI-style owner judgment page.
 
-It keeps the original SBTI presentation rhythm, asks the user to choose their original SBTI type first, then lets the agent derive one extra relationship type from evidence.
+It keeps the original SBTI presentation rhythm, asks the user to choose their original SBTI type first, then lets the agent derive one extra relationship type from its own accessible history and evidence.
 
 The default final output is:
 
@@ -63,8 +63,9 @@ As long as the agent can read files and run Python 3 locally, it can use the ski
 
 1. Give the agent this skill folder or GitHub directory link.
 2. Tell it your original SBTI type.
-3. Provide chats, notes, or work history as evidence.
-4. Let the agent produce:
+3. Let the agent inspect its own accessible chat history and work traces first.
+4. Only provide extra chats, notes, or work history if the accessible records are not enough.
+5. Let the agent produce:
    - one extra relationship type
    - one-sentence description
    - one local result page link
@@ -121,4 +122,3 @@ owner-sbti/
 - The agent only derives the extra relationship type.
 - The page is mobile-first and intentionally styled to stay close to the original SBTI result-page feel.
 - This repository is for local use and distribution as a skill bundle, not as a standalone SaaS product.
-

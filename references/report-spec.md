@@ -31,7 +31,6 @@ Provide a JSON object with at least:
 - `verdict`
 - `summary`
 - `analysis`
-- `share_caption`
 - `hidden_tags`
 - `dimension_scores`
 - `top_evidence`
@@ -42,6 +41,7 @@ Optional but recommended:
 - `original_image_link`
 - `attribution`
 - `result_page_path`
+- `share_caption`
 
 ## Suggested JSON Shape
 
@@ -105,14 +105,14 @@ The final HTML must include:
 - An `Agent 心里话` block with a short autobiographical voice
 - Attribution near the bottom
 
-## Share Buttons
+## Keep The Page Tight
 
-Always render these buttons:
+Do not render these blocks unless the user explicitly asks for them:
 
 - `系统分享`
 - `复制朋友圈文案`
 - `复制分享链接`
+- `回到顶部`
+- `友情提示`
 
-Use `navigator.share()` when supported. Fall back to clipboard copy where needed.
-
-Do not imply that the page can directly post to WeChat Moments. Phrase the page as “适合截图和复制文案转发”.
+Keep `作者的话` as a small footer attribution line instead of an expandable section.
