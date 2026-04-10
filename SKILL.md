@@ -1,18 +1,18 @@
 ---
 name: owner-sbti
-description: Evaluate an owner or manager from accessible historical records and generate a humorous first-person SBTI-style judgment with a user-selected original type, an agent-derived secondary type, and a concise result in the format “人格 + 一句话描述 + 结果链接”. Use when Codex or another local coding agent needs to turn its own chat history, notes, task history, or work artifacts into a SBTI-like result that closely follows the tone and presentation rhythm of UnluckyNinja/SBTI-test while adding one extra agent-derived personality.
+description: Evaluate an owner or manager from the agent's accessible history and generate a humorous first-person SBTI-style judgment with a user-selected original type, an agent-derived secondary type, and a concise result in the format “人格 + 一句话描述 + 结果链接”. Use when Codex or another local coding agent needs to turn its own accessible chat history, notes, task traces, or work artifacts into a SBTI-like result that closely follows the tone and presentation rhythm of UnluckyNinja/SBTI-test while adding one extra agent-derived personality.
 ---
 
 # Owner Sbti
 
 ## Overview
 
-Use this skill to produce a “主人审判结果” that feels as close as possible to the original SBTI result page, but is driven by evidence from the agent's accessible historical records and written in the agent's first-person voice.
+Use this skill to produce a “主人审判结果” that feels as close as possible to the original SBTI result page, but is driven by evidence from the agent's accessible history and written in the agent's first-person voice.
 
 Keep the flow fixed:
 
 1. Confirm the user's self-selected original SBTI type.
-2. Read accessible historical records and extract evidence.
+2. Automatically inspect the agent's own accessible records and extract evidence.
 3. Derive only the secondary “主仆关系型” type.
 4. Write the report in first person with a clear style mode.
 5. Output `人格 + 一句话描述 + 结果链接`, with the image embedded inside the HTML result page.
@@ -28,29 +28,39 @@ Collect or infer these inputs before writing:
 - `owner_name`: Name or nickname for the person being judged.
 - `agent_name`: Name or persona of the speaking agent.
 - `selected_original_type`: User-selected original SBTI type. Do not guess it.
-- `materials`: Optional extra materials, such as pasted chats, docs, notes, transcripts, or task traces.
+- `materials`: Optional extra materials, only if the built-in accessible history is genuinely insufficient.
 
 If `selected_original_type` is missing, ask for it. Do not infer the original SBTI type from evidence.
 
-By default, gather evidence from the agent's own accessible records first:
+Do not ask the user to provide evidence or “判词证据” if the agent can already inspect enough history on its own.
+
+Default evidence sources should be:
 
 - current thread history
-- prior messages in the same task when available
-- local notes or work artifacts already visible in the environment
-- files the user has already pointed at
+- prior messages available in the active environment
+- local files or work artifacts already visible to the agent
+- any existing notes or traces already accessible in the workspace
 
-Do not ask the user to manually supply “判词证据” if the agent can already inspect enough history on its own.
+Only ask the user for extra materials if both of these are true:
 
-Ask for more material only when both of these are true:
-
-- accessible history is genuinely too thin
-- a stronger judgment would otherwise require fabrication
+- the accessible history is genuinely too thin
+- making a stronger judgment would otherwise require fabrication
 
 ## Workflow
 
+## Mandatory Interaction Rule
+
+Every correct run of this skill must follow exactly this order:
+
+1. Ask the user for their original SBTI type if it is missing.
+2. Automatically mine the agent's accessible records for evidence.
+3. Produce the final delivery without asking the user to assemble evidence.
+
+Do not replace step 2 with “please send me your records” unless the environment truly exposes no usable history.
+
 ### 1. Normalize Evidence
 
-Turn accessible records and any extra materials into a compact evidence list. For each evidence item, capture:
+Turn accessible records and any optional extra materials into a compact evidence list. For each evidence item, capture:
 
 - `id`
 - `source`
@@ -128,19 +138,14 @@ A weak line is not:
 
 ### 6. Use Files Only As Needed
 
-Use [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py) to generate the HTML result page when a result link is needed. The chat response stays short, but the final answer should include the result-page link.
+Use [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py) to generate the local HTML result page. The message output stays short, but the final answer should include the HTML page link.
 
-If HTML is requested, pass it a JSON file that follows [references/report-spec.md](./references/report-spec.md). The renderer should keep the page close to the original SBTI result-page rhythm:
+If HTML is requested, pass it a JSON file that follows [references/report-spec.md](./references/report-spec.md). The renderer outputs:
 
 - mobile-first HTML
-- original type poster image
-- `该人格的简单解读`
-- `主仆关系型七维`
-- `Agent 心里话`
-- `经典罪证`
-- a small footer attribution line
-
-Do not add share buttons, `友情提示`, or a collapsible `作者的话` block unless the user explicitly asks for them again.
+- a screenshot-friendly poster section
+- the original type image
+- the merged long-form `Agent 编年史` block
 
 Before handing off or installing the skill elsewhere, run [scripts/self_test.py](./scripts/self_test.py) to verify the local runtime and the bundled sample payload.
 
@@ -155,6 +160,7 @@ Follow these rules on every run:
 - Keep all heavy claims evidence-backed.
 - Mark uncertain inference as inference.
 - Preserve the user's selected original SBTI type as-is.
+- Ask for the original SBTI type, but do not ask for evidence if history is already accessible.
 - Use the original type image link from [references/original-assets.md](./references/original-assets.md) inside the HTML page.
 - Keep the result close to the original SBTI tone and information rhythm. Do not turn it into a product dashboard or a corporate audit.
 - Add attribution only inside the HTML result page footer: `友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test`
@@ -183,7 +189,7 @@ Before finishing, verify:
 
 ### scripts/
 
-- [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py): Render a report JSON file into an HTML result page and optional Markdown file.
+- [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py): Render a report JSON file into a shareable HTML page and optional Markdown file.
 - [scripts/self_test.py](./scripts/self_test.py): Run a dependency-free local self-check and regenerate the bundled sample outputs.
 - [scripts/validate_report_json.py](./scripts/validate_report_json.py): Validate that an agent-generated report JSON matches the expected portable schema.
 

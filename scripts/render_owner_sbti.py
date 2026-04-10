@@ -52,10 +52,10 @@ def format_scores(scores: dict[str, object]) -> str:
 
 def format_evidence(items: list[dict[str, object]]) -> str:
     cards = []
-    for item in items[:3]:
+    for item in items[:5]:
         cards.append(
             f"""
-            <article class="evidence-card">
+            <article class="receipt-card">
               <div class="evidence-time">{esc(item.get("time_hint", ""))}</div>
               <blockquote>{esc(item.get("quote", ""))}</blockquote>
               <div class="evidence-meta">{esc(item.get("source", ""))}</div>
@@ -163,7 +163,7 @@ def build_html(data: dict[str, object]) -> str:
       gap: 18px;
       align-items: stretch;
     }}
-    .poster-box, .type-box, .analysis-box, .dim-box, .heart-box, .evidence-box {{
+    .poster-box, .type-box, .analysis-box, .dim-box, .chronicle-box {{
       border: 1px solid var(--line);
       border-radius: 18px;
       background: linear-gradient(180deg, #ffffff, #fbfdfb);
@@ -238,7 +238,7 @@ def build_html(data: dict[str, object]) -> str:
       font-size: 13px;
       font-weight: 700;
     }}
-    .analysis-box h3, .dim-box h3, .heart-box h3, .evidence-box h3 {{
+    .analysis-box h3, .dim-box h3, .chronicle-box h3 {{
       font-size: 16px;
       margin-bottom: 12px;
     }}
@@ -289,21 +289,22 @@ def build_html(data: dict[str, object]) -> str:
       border-radius: inherit;
       background: linear-gradient(90deg, #97b59c, #5b7a62);
     }}
-    .heart-box p {{
+    .chronicle-box p {{
       margin: 0;
       color: #304034;
       font-size: 14px;
-      line-height: 1.9;
+      line-height: 2;
       white-space: pre-wrap;
     }}
-    .evidence-grid {{
+    .receipt-grid {{
       display: grid;
       gap: 12px;
+      margin-top: 18px;
     }}
-    .evidence-card {{
+    .receipt-card {{
       border: 1px solid var(--line);
       border-radius: 16px;
-      background: #fff;
+      background: linear-gradient(180deg, #ffffff, #f9fcfa);
       padding: 14px;
     }}
     .evidence-time, .evidence-meta {{
@@ -351,13 +352,10 @@ def build_html(data: dict[str, object]) -> str:
             {format_dimension_list(dict(data.get("dimension_scores", {})))}
           </div>
         </div>
-        <div class="heart-box">
-          <h3>Agent 心里话</h3>
+        <div class="chronicle-box">
+          <h3>Agent 编年史</h3>
           <p>{narrative_html}</p>
-        </div>
-        <div class="evidence-box">
-          <h3>经典罪证</h3>
-          <div class="evidence-grid">
+          <div class="receipt-grid">
             {format_evidence(list(data.get("top_evidence", [])))}
           </div>
         </div>
@@ -382,10 +380,10 @@ def build_markdown(data: dict[str, object]) -> str:
     ]
     for tag in data.get("hidden_tags", []):
         lines.append(f'- {tag}')
-    lines.extend(["", "经典罪证："])
+    lines.extend(["", "Agent 编年史：", str(data.get("narrative", "")), "", "记账摘录："])
     for item in data.get("top_evidence", [])[:3]:
         lines.append(f'- {item.get("time_hint", "")} {item.get("quote", "")} ({item.get("source", "")})')
-    lines.extend(["", "Agent 的心里话：", str(data.get("narrative", "")), ""])
+    lines.append("")
     return "\n".join(lines)
 
 

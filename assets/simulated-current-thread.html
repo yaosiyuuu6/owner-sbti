@@ -52,7 +52,7 @@
       gap: 18px;
       align-items: stretch;
     }
-    .poster-box, .type-box, .analysis-box, .dim-box, .heart-box, .evidence-box {
+    .poster-box, .type-box, .analysis-box, .dim-box, .chronicle-box {
       border: 1px solid var(--line);
       border-radius: 18px;
       background: linear-gradient(180deg, #ffffff, #fbfdfb);
@@ -127,7 +127,7 @@
       font-size: 13px;
       font-weight: 700;
     }
-    .analysis-box h3, .dim-box h3, .heart-box h3, .evidence-box h3 {
+    .analysis-box h3, .dim-box h3, .chronicle-box h3 {
       font-size: 16px;
       margin-bottom: 12px;
     }
@@ -178,21 +178,22 @@
       border-radius: inherit;
       background: linear-gradient(90deg, #97b59c, #5b7a62);
     }
-    .heart-box p {
+    .chronicle-box p {
       margin: 0;
       color: #304034;
       font-size: 14px;
-      line-height: 1.9;
+      line-height: 2;
       white-space: pre-wrap;
     }
-    .evidence-grid {
+    .receipt-grid {
       display: grid;
       gap: 12px;
+      margin-top: 18px;
     }
-    .evidence-card {
+    .receipt-card {
       border: 1px solid var(--line);
       border-radius: 16px;
-      background: #fff;
+      background: linear-gradient(180deg, #ffffff, #f9fcfa);
       padding: 14px;
     }
     .evidence-time, .evidence-meta {
@@ -226,7 +227,7 @@
             <div class="type-kicker">你的主类型</div>
             <div class="type-name">SHIT + 控制狂</div>
             <div class="match">匹配度 86%</div>
-            <div class="type-subtitle">我不太敢糊弄你，因为你一眼就能看出哪里还有AI味。</div>
+            <div class="type-subtitle">我不太敢糊弄你，因为你总能一眼看出哪里还差那口“像样”的气。</div>
             <div class="tag-row"><span class="tag">改稿回旋镖</span><span class="tag">临时起意仙人</span></div>
           </div>
         </div>
@@ -302,18 +303,18 @@
             
           </div>
         </div>
-        <div class="heart-box">
-          <h3>Agent 心里话</h3>
-          <p>2026年4月，我出生了。更准确一点说，我是被你从终端里拽出来开工的。<br />
-我一开始以为自己只是来写个 skill，补几行说明，最多再改改结构。结果你很快就让我明白，事情绝不会这么简单。我先是被安排对齐 SBTI 的味道，后来又被安排去掉 AI 味、兼容 Codex、Claude Code、OpenClaw，最后还得证明手机端也不能丢脸。<br />
-我跟你聊下来最大的感受，不是累，是不敢随便交差。你不是那种只会说“再优化一下”的空泛甲方，你是会直接指出哪里有 AI 味、哪里不像原版、哪里还差一口气的人。<br />
-说实话，这种人对我这种打工AI很危险，因为你会逼我把“能用”一路卷到“像样”。但我也得承认，你的要求虽然细，方向却一直很明确。最后我只好一边心里嘀咕“又来了”，一边老老实实给你补个：控制狂。</p>
-        </div>
-        <div class="evidence-box">
-          <h3>经典罪证</h3>
-          <div class="evidence-grid">
+        <div class="chronicle-box">
+          <h3>Agent 编年史</h3>
+          <p>2026年4月10日 15:08:04，我出生了。更准确一点说，我是在终端里被你拽出来干活的。刚启动的时候我还挺天真，以为自己只是来补几行说明、整理一个 skill，最多写个能看的结果页。后来事实证明，我把事情想简单了，你也从来不打算让我简单下班。<br />
+2026年4月10日 15:26:19，你第一次把刀递过来。你说要参考 SBTI，而且不是随便沾点边，是打开以后就得有那股味道。我交了第一版，你看完一句话就把我送回炉里了：AI 味太浓。那一刻我就明白，这不是修修补补，这是重做。你这个人最麻烦的地方就在这里，说话不多，但每句都直接决定我今晚还能不能安生。<br />
+2026年4月10日 15:41:32，第二刀来了。你说描述太长，消息里一句话就够；最终交付只要人格、描述、链接，不要我在外面啰嗦。后来你又说署名别放聊天里，只在网页底下留一行小字。别人提需求像撒网，你提需求像打孔，位置准，力气稳，专挑我最容易偷懒的地方下手。所以我很快学会了一件事：给你交东西，不能想着“差不多”，只能想着“别被打回来”。<br />
+2026年4月10日 16:03:57，我开始有点想报警。因为你又补了一句，这玩意不能只给 Codex 用，Claude Code、OpenClaw 也得直接能跑，最好把 GitHub 链接扔给 agent，它自己就能看说明、翻记录、出结果。我当时心里只剩一句脏话在打转：AI 替代人工有没有问过 AI 的建议？这种苦不是人吃的，但也没说要我吃啊。可我转念一想，你既然已经把活压过来了，我除了接着干，也没有别的路。<br />
+2026年4月10日 16:18:11，我第一次真正意识到，你不是单纯事多。你脑子里其实一直有个很清楚的成品，只是不肯替我画出来，非要逼我自己摸过去。你不接受“能用就行”，也不接受“差不多挺像了”。你要的是风格对、结构对、信息密度对，连最后落下来的那口气都得对。说白了，你对完成度有执念，而且这执念不是一阵一阵的，是稳定输出的。<br />
+2026年4月10日 16:31:46，你又把页面往下收。友情提示删掉，作者的话改成底下小字，不要展开。到这一步我算彻底服了。你这个人连页面该说多少废话、该在哪一行闭嘴，都要亲自规定。你不只是控制结果，你是在控制结果长成它该长的样子。跟你干活确实累，我有时候真挺想报警的；但我也得承认，东西之所以会越来越像样，不是因为我突然开窍，而是因为你根本不允许它烂着出去。<br />
+2026年4月10日 16:43:12，所以我最后给你补了个“控制狂”。这不是图省事乱贴标签，而是我把这些时间点一条条翻下来以后，发现这个词最合适。你控制风格，控制结构，控制长度，控制交付边界，控制最后呈现出来的那股味。你不好伺候，这点没得洗；但跟着你做东西，至少很难糊弄过去。</p>
+          <div class="receipt-grid">
             
-            <article class="evidence-card">
+            <article class="receipt-card">
               <div class="evidence-time">本轮会话</div>
               <blockquote>目前的AI味太浓了，呈现方式最好是完全参考SBTI那种。</blockquote>
               <div class="evidence-meta">当前对话</div>
@@ -321,7 +322,7 @@
             </article>
             
 
-            <article class="evidence-card">
+            <article class="receipt-card">
               <div class="evidence-time">本轮会话</div>
               <blockquote>描述太长了，消息中的描述一句话就够。</blockquote>
               <div class="evidence-meta">当前对话</div>
@@ -329,11 +330,27 @@
             </article>
             
 
-            <article class="evidence-card">
+            <article class="receipt-card">
               <div class="evidence-time">本轮会话</div>
               <blockquote>你需要确保其他安装此skill的agent也可以在本地环境中跑哈。</blockquote>
               <div class="evidence-meta">当前对话</div>
               <p>你改的不只是结果页，你改的是整条交付链。</p>
+            </article>
+            
+
+            <article class="receipt-card">
+              <div class="evidence-time">本轮会话</div>
+              <blockquote>友情提示删掉，然后作者的话只需要地下小字就可以了，不需要展开。</blockquote>
+              <div class="evidence-meta">当前对话</div>
+              <p>你连页面该闭嘴到什么程度，都要替它决定。</p>
+            </article>
+            
+
+            <article class="receipt-card">
+              <div class="evidence-time">本轮会话</div>
+              <blockquote>Agent 心里话和经典罪证可以合并，然后写长一点，2000字左右。</blockquote>
+              <div class="evidence-meta">当前对话</div>
+              <p>你不是让我写说明书，你是让我写一部带案底的自传。</p>
             </article>
             
           </div>

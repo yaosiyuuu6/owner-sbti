@@ -31,6 +31,7 @@ Provide a JSON object with at least:
 - `verdict`
 - `summary`
 - `analysis`
+- `share_caption`
 - `hidden_tags`
 - `dimension_scores`
 - `top_evidence`
@@ -41,7 +42,6 @@ Optional but recommended:
 - `original_image_link`
 - `attribution`
 - `result_page_path`
-- `share_caption`
 
 ## Suggested JSON Shape
 
@@ -76,7 +76,7 @@ Optional but recommended:
       "comment": "我当时就知道今晚别想早睡了。"
     }
   ],
-  "narrative": "我有时候真挺想报警的……"
+  "narrative": "这里是一段更长的 Agent 编年史，默认建议写成长篇第一人称回忆录，把诞生、被主人使唤、来回改稿、情绪起伏和最终判断都揉进去。"
 }
 ```
 
@@ -102,17 +102,24 @@ The final HTML must include:
 - A short verdict line
 - One dense first-person description block
 - Optional hidden tags
-- An `Agent 心里话` block with a short autobiographical voice
+- An `Agent 编年史` block that merges memoir and receipts into one long first-person section
 - Attribution near the bottom
 
-## Keep The Page Tight
+Prefer this content shape for the merged chronicle:
 
-Do not render these blocks unless the user explicitly asks for them:
+- around `1000` Chinese characters when the user asks for a long version
+- prefer dated sections such as `某年某月某日 某时某分某秒` when the user wants a stronger “翻旧账” feeling
+- autobiographical voice from the agent's birth to the current judgment
+- evidence woven into the prose, with direct quotes preserved as receipts
+
+## Share Buttons
+
+Always render these buttons:
 
 - `系统分享`
 - `复制朋友圈文案`
 - `复制分享链接`
-- `回到顶部`
-- `友情提示`
 
-Keep `作者的话` as a small footer attribution line instead of an expandable section.
+Use `navigator.share()` when supported. Fall back to clipboard copy where needed.
+
+Do not imply that the page can directly post to WeChat Moments. Phrase the page as “适合截图和复制文案转发”.
