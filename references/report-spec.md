@@ -112,14 +112,8 @@ Prefer this content shape for the merged chronicle:
 - autobiographical voice from the agent's birth to the current judgment
 - evidence woven into the prose, with direct quotes preserved as receipts
 
-## Share Buttons
+## Keep The Page Tight
 
-Always render these buttons:
+Do not render extra utility controls or discarded helper sections unless the user explicitly asks for them again.
 
-- `系统分享`
-- `复制朋友圈文案`
-- `复制分享链接`
-
-Use `navigator.share()` when supported. Fall back to clipboard copy where needed.
-
-Do not imply that the page can directly post to WeChat Moments. Phrase the page as “适合截图和复制文案转发”.
+Keep the footer as a single small attribution line.

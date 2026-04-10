@@ -70,7 +70,7 @@ As long as the agent can read files and run Python 3 locally, it can use the ski
    - one-sentence description
    - one local result page link
 
-The user should not have to manually prepare “判词证据” in the normal case.
+The user should not have to manually prepare evidence in the normal case.
 
 ## Local Rendering
 

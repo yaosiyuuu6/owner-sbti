@@ -32,7 +32,7 @@ Collect or infer these inputs before writing:
 
 If `selected_original_type` is missing, ask for it. Do not infer the original SBTI type from evidence.
 
-Do not ask the user to provide evidence or “判词证据” if the agent can already inspect enough history on its own.
+Do not ask the user to manually collect evidence if the agent can already inspect enough history on its own.
 
 Default evidence sources should be:
 

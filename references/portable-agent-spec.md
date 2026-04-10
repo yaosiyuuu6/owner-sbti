@@ -49,7 +49,7 @@ No matter which agent runtime is used, keep these rules fixed:
 - Strong claims must be evidence-backed.
 - The result should feel like the original SBTI page, not a neutral audit.
 - The final default answer should be concise enough to send directly in chat.
-- The user should not need to gather “判词证据” in normal usage.
+- The user should not need to gather evidence in normal usage.
 
 ## Recommended Prompt Skeleton
 
