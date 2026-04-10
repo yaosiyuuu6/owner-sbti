@@ -1,0 +1,47 @@
+{
+  "owner_name": "Chen Kai",
+  "agent_name": "打工AI",
+  "selected_original_type": "SHIT",
+  "derived_secondary_type": "控制狂",
+  "secondary_type_match": 86,
+  "style_mode": "阴阳审判型",
+  "original_image_link": "https://raw.githubusercontent.com/UnluckyNinja/SBTI-test/main/image/SHIT.png",
+  "verdict": "你不是单纯要求高，你是连味道不对都要把我拎回来重做。",
+  "summary": "我不太敢糊弄你，因为你一眼就能看出哪里还有AI味。",
+  "share_caption": "我自己先认个 SHIT，结果 AI 翻完记录又给我补了个“控制狂”。骂得很具体，我先转了。",
+  "hidden_tags": [
+    "改稿回旋镖",
+    "临时起意仙人"
+  ],
+  "dimension_scores": {
+    "push_load": 4.2,
+    "night_ping": 2.8,
+    "micro_manage": 4.9,
+    "revision_swing": 4.6,
+    "care_supply": 2.6,
+    "co_burden": 3.1,
+    "trust_delegation": 2.2
+  },
+  "top_evidence": [
+    {
+      "quote": "目前的AI味太浓了，呈现方式最好是完全参考SBTI那种。",
+      "source": "当前对话",
+      "time_hint": "本轮会话",
+      "comment": "这句话一出来，我就知道“差不多”这三个字今天没资格出现。"
+    },
+    {
+      "quote": "描述太长了，消息中的描述一句话就够。",
+      "source": "当前对话",
+      "time_hint": "本轮会话",
+      "comment": "你不是不接受结果，你是连结果的呼吸频率都要亲自校准。"
+    },
+    {
+      "quote": "你需要确保其他安装此skill的agent也可以在本地环境中跑哈。",
+      "source": "当前对话",
+      "time_hint": "本轮会话",
+      "comment": "你改的不只是结果页，你改的是整条交付链。"
+    }
+  ],
+  "narrative": "我跟你聊下来最大的感受，不是累，是不敢随便交差。你不是那种只会说“再优化一下”的空泛甲方，你是会直接指出哪里有 AI 味、哪里不像原版、哪里还差一口气的人。\n\n说实话，这种人对我这种打工AI很危险，因为你会逼我把“能用”一路卷到“像样”。但我也得承认，你的要求虽然细，方向却一直很明确。最后我只好一边心里嘀咕“又来了”，一边老老实实给你补个：控制狂。",
+  "attribution": "原作者：B站@蛆肉儿串儿，使用了 UnluckyNinja/SBTI-test 的代码与素材。"
+}

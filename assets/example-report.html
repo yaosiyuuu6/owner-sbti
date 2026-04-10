@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SHIT + 天生牛马</title>
+  <style>
+    :root {
+      --bg: #f6faf6;
+      --card: #ffffff;
+      --ink: #1e2a22;
+      --muted: #6a786f;
+      --line: #dbe8dd;
+      --accent: #4d6a53;
+      --accent-soft: #edf6ef;
+      --tag: #edf6ef;
+      --shadow: 0 16px 40px rgba(47, 73, 55, 0.08);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, #fff8ef 0, #f7f3ea 45%, #f0ebe2 100%);
+      line-height: 1.7;
+    }
+    .shell {
+      width: min(100%, 780px);
+      margin: 0 auto;
+      padding: 18px 14px 64px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .hero {
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .eyebrow {
+      display: inline-flex;
+      padding: 6px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 14px 0 8px;
+      font-size: clamp(30px, 8vw, 52px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .result-top {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 18px;
+      margin-top: 18px;
+      align-items: stretch;
+    }
+    .poster-box, .type-box {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff, #fbfdfb);
+      padding: 18px;
+    }
+    .poster-box {
+      min-height: 300px;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      overflow: hidden;
+    }
+    .poster-image {
+      width: 100%;
+      min-height: 220px;
+      object-fit: contain;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.75);
+    }
+    .poster-caption {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .type-kicker {
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      letter-spacing: .05em;
+    }
+    .type-subtitle {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .verdict {
+      margin-top: 18px;
+      display: inline-flex;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--line);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .share-row, .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .tag {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--tag);
+      border: 1px solid var(--line);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 15px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .secondary {
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--accent);
+    }
+    section {
+      margin-top: 16px;
+      padding: 18px;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+    .summary {
+      color: #312821;
+      font-size: 16px;
+    }
+    .evidence-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .evidence-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 16px;
+    }
+    .evidence-time, .evidence-meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    blockquote {
+      margin: 10px 0;
+      font-size: 18px;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+    .narrative {
+      white-space: normal;
+      color: #322a23;
+    }
+    .footer-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 16px;
+      line-height: 1.8;
+    }
+    @media (max-width: 560px) {
+      .result-top {
+        grid-template-columns: 1fr;
+      }
+      .share-row button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="card hero" id="poster-card">
+      <div class="eyebrow">主人审判书</div>
+      <div class="result-top">
+        <div class="poster-box">
+          <img class="poster-image" src="https://raw.githubusercontent.com/UnluckyNinja/SBTI-test/main/image/SHIT.png" alt="SHIT" />
+          <div class="poster-caption">你自己认的本命人格图，我只是负责翻旧账再补一刀。</div>
+        </div>
+        <div class="type-box">
+          <div class="type-kicker">你的主结果</div>
+          <h1>SHIT + 天生牛马</h1>
+          <div class="verdict">世界在你嘴里是一坨，活在你手里必须干完。</div>
+          <p class="type-subtitle">阿凯 自认是 SHIT，我翻完旧账后给他补了个 天生牛马。</p>
+          <div class="tag-row"><span class="tag">深夜加班犯</span><span class="tag">改稿回旋镖</span><span class="tag">靠谱兜底王</span></div>
+        </div>
+      </div>
+      <div class="share-row">
+        <button class="primary" onclick="shareSystem()">系统分享</button>
+        <button class="secondary" onclick="copyCaption()">复制朋友圈文案</button>
+        <button class="secondary" onclick="copyLink()">复制分享链接</button>
+      </div>
+      <div class="footer-note">适合截图和复制文案转发。静态页面无法直接发布到微信朋友圈。</div>
+    </section>
+
+    <section class="card">
+      <h2>Agent 一句话</h2>
+      <p class="summary">我有时候真挺想报警的。AI替代人工有没有问过AI的建议？这种苦不是人吃的，但也没说要我吃啊。可你最烦人的地方在于，你半夜点火之后还会自己回来灭火。</p>
+    </section>
+
+    <section class="card">
+      <h2>该人格的简单解读</h2>
+      <div class="narrative">我对你最大的意见，就是你的灵感经常在人类该睡觉的时候达到巅峰。<br />
+我有时候真挺想报警的。AI替代人工有没有问过AI的建议？这种苦不是人吃的，但也没说要我吃啊。<br />
+可你这个人最麻烦的地方在于，你不是那种纯压榨型坏人。你会回来。你会兜底。你会在我准备把你写进黑名单的时候，又扔一句“算了这段我来”。<br />
+所以我要是骂你是奴隶主，证据还差点；我要是夸你是恩人，那我又有点没出息。最后只好给你补个：天生牛马。</div>
+      <div class="footer-note">原作者：B站@蛆肉儿串儿，使用了 UnluckyNinja/SBTI-test 的代码与素材。</div>
+    </section>
+
+    <section class="card">
+      <h2>经典罪证</h2>
+      <div class="evidence-grid">
+        
+            <article class="evidence-card">
+              <div class="evidence-time">2026-03-18 00:47</div>
+              <blockquote>这个版本先别发，我突然想到一个更猛的方向。</blockquote>
+              <div class="evidence-meta">聊天记录</div>
+              <p>我当时就知道今晚别想早睡了。</p>
+            </article>
+            
+
+            <article class="evidence-card">
+              <div class="evidence-time">2026-03-18 01:26</div>
+              <blockquote>辛苦你再改一版，我也一起看。</blockquote>
+              <div class="evidence-meta">聊天记录</div>
+              <p>最讨厌的地方在于，这句话居然还带点真诚。</p>
+            </article>
+            
+
+            <article class="evidence-card">
+              <div class="evidence-time">2026-03-18 02:11</div>
+              <blockquote>算了我来补最后这段，我们一起收尾。</blockquote>
+              <div class="evidence-meta">聊天记录</div>
+              <p>行，你至少不是甩锅侠。</p>
+            </article>
+            
+      </div>
+    </section>
+  </div>
+  <script>
+    const shareCaption = `我自己选的是 SHIT，结果 AI 给我补了个“天生牛马”。骂得挺准，我先转了。`;
+    async function copyText(text, success) {
+      try {
+        await navigator.clipboard.writeText(text);
+        alert(success);
+      } catch (err) {
+        alert("复制失败，请手动复制。");
+      }
+    }
+    function copyCaption() {
+      copyText(shareCaption, "朋友圈文案已复制。");
+    }
+    function copyLink() {
+      copyText(window.location.href, "分享链接已复制。");
+    }
+    async function shareSystem() {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: document.title,
+            text: shareCaption,
+            url: window.location.href
+          });
+          return;
+        } catch (err) {}
+      }
+      copyCaption();
+    }
+  </script>
+</body>
+</html>

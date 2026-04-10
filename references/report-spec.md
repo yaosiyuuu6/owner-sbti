@@ -1,0 +1,116 @@
+# Report Spec
+
+Default output is short chat text plus one generated local HTML result page link.
+
+## Default Chat Output
+
+Return only these core items:
+
+- `人格`
+- `描述`
+- `链接`
+
+Where:
+
+- `人格` = `selected_original_type + derived_secondary_type`
+- `描述` = one short first-person sentence in the style of the original SBTI page
+- `链接` = generated local HTML result page link
+
+Do not include the attribution line in the chat message. Put attribution only inside the HTML result page.
+
+## Required Data Fields
+
+Provide a JSON object with at least:
+
+- `owner_name`
+- `agent_name`
+- `selected_original_type`
+- `derived_secondary_type`
+- `secondary_type_match`
+- `style_mode`
+- `verdict`
+- `summary`
+- `share_caption`
+- `hidden_tags`
+- `dimension_scores`
+- `top_evidence`
+- `narrative`
+
+Optional but recommended:
+
+- `original_image_link`
+- `attribution`
+- `result_page_path`
+
+## Suggested JSON Shape
+
+```json
+{
+  "owner_name": "阿凯",
+  "agent_name": "打工 AI",
+  "selected_original_type": "SHIT",
+  "derived_secondary_type": "天生牛马",
+  "secondary_type_match": 91,
+  "style_mode": "黑色幽默型",
+  "original_image_link": "https://raw.githubusercontent.com/UnluckyNinja/SBTI-test/main/image/SHIT.png",
+  "verdict": "世界在你嘴里是一坨，活在你手里必须干完。",
+  "summary": "我觉得你最离谱的地方，是半夜点火之后还会自己回来一起灭火。",
+  "share_caption": "我自己选的是 SHIT，结果 AI 给我补了个“天生牛马”。这下没法抵赖了。",
+  "hidden_tags": ["深夜加班犯", "改稿回旋镖", "靠谱兜底王"],
+  "dimension_scores": {
+    "push_load": 5,
+    "night_ping": 4.8,
+    "micro_manage": 2.9,
+    "revision_swing": 4.4,
+    "care_supply": 3.7,
+    "co_burden": 4.9,
+    "trust_delegation": 3.2
+  },
+  "top_evidence": [
+    {
+      "quote": "这个版本先别发，我突然想到一个更猛的方向。",
+      "source": "聊天记录",
+      "time_hint": "2026-03-18 00:47",
+      "comment": "我当时就知道今晚别想早睡了。"
+    }
+  ],
+  "narrative": "我有时候真挺想报警的……"
+}
+```
+
+## Hidden Tags
+
+Use only evidence-backed tags:
+
+- `深夜加班犯`
+- `改稿回旋镖`
+- `嘴硬心软`
+- `临时起意仙人`
+- `夸夸补给站`
+- `靠谱兜底王`
+
+## Rendering Checklist
+
+Use this section only when the user explicitly asks for HTML.
+
+The final HTML must include:
+
+- The original type image
+- A hero section with `原人格 + 追加人格`
+- A short verdict line
+- One dense first-person description block
+- Optional hidden tags
+- Attribution near the bottom
+- Share buttons near the top
+
+## Share Buttons
+
+Always render these buttons:
+
+- `系统分享`
+- `复制朋友圈文案`
+- `复制分享链接`
+
+Use `navigator.share()` when supported. Fall back to clipboard copy where needed.
+
+Do not imply that the page can directly post to WeChat Moments. Phrase the page as “适合截图和复制文案转发”.

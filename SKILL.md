@@ -1,0 +1,182 @@
+---
+name: owner-sbti
+description: Evaluate an owner or manager from historical materials and generate a humorous first-person SBTI-style judgment with a user-selected original type, an agent-derived secondary type, and a concise result in the format “人格 + 一句话描述 + 结果链接”. Use when Codex or another local coding agent needs to turn chats, notes, task history, or work artifacts into a SBTI-like result that closely follows the tone and presentation rhythm of UnluckyNinja/SBTI-test while adding one extra agent-derived personality.
+---
+
+# Owner Sbti
+
+## Overview
+
+Use this skill to produce a “主人审判结果” that feels as close as possible to the original SBTI result page, but is driven by evidence from historical materials and written in the agent's first-person voice.
+
+Keep the flow fixed:
+
+1. Confirm the user's self-selected original SBTI type.
+2. Read historical materials and extract evidence.
+3. Derive only the secondary “主仆关系型” type.
+4. Write the report in first person with a clear style mode.
+5. Output `人格 + 一句话描述 + 结果链接`, with the image embedded inside the HTML result page.
+
+This skill is designed to run locally on a clean machine with only Python 3 available. Do not assume third-party Python packages, browser automation, or hosted services are present.
+
+Treat the bundle as portable across agent runtimes. Codex can discover it as a native skill, but Claude Code, OpenClaw, or any other local coding agent can use the same files directly from a GitHub link by reading this `SKILL.md` and the bundled references. The agent should be able to create one local HTML result page and return that page link without any extra manual setup from the user.
+
+## Required Inputs
+
+Collect or infer these inputs before writing:
+
+- `owner_name`: Name or nickname for the person being judged.
+- `agent_name`: Name or persona of the speaking agent.
+- `selected_original_type`: User-selected original SBTI type. Do not guess it.
+- `materials`: Historical materials, such as chats, docs, notes, transcripts, or task traces.
+
+If `selected_original_type` is missing, ask for it. Do not infer the original SBTI type from evidence.
+
+If evidence is too thin to support a strong judgment, say so and request more material. Do not fabricate.
+
+## Workflow
+
+### 1. Normalize Evidence
+
+Turn raw materials into a compact evidence list. For each evidence item, capture:
+
+- `id`
+- `source`
+- `time_hint`
+- `excerpt`
+- `summary`
+- `mapped_dimensions`
+- `confidence`
+
+Prefer direct quotes over paraphrase. Keep spicy lines if they are genuinely supported by the source.
+
+### 2. Score the Secondary Type
+
+Read [references/relationship-types.md](./references/relationship-types.md) and score the seven relationship dimensions:
+
+- `push_load`
+- `night_ping`
+- `micro_manage`
+- `revision_swing`
+- `care_supply`
+- `co_burden`
+- `trust_delegation`
+
+Match the nearest secondary archetype from the fixed twelve-type library in that reference.
+
+Do not replace the original SBTI type. The final title is always:
+
+- `selected_original_type + derived_secondary_type`
+
+### 3. Add Hidden Tags
+
+Use [references/report-spec.md](./references/report-spec.md) to attach zero or more hidden tags. Favor tags that make the page more explainable and more shareable.
+
+Do not add tags without evidence.
+
+### 4. Choose a Voice Mode
+
+Read [references/voice-guide.md](./references/voice-guide.md) and choose one primary voice mode:
+
+- `怨种吐槽型`
+- `忠犬表白型`
+- `黑色幽默型`
+- `阴阳审判型`
+- `治愈夸夸型`
+
+Use one primary mode and optionally one light secondary mode for contrast. All core copy must remain first person from the agent.
+
+### 5. Write the Deliverables
+
+Produce:
+
+- A final personality title in the form `原人格 + 追加人格`.
+- One local HTML result page that embeds the original type image from the SBTI-test asset set.
+- One short first-person description that reads like the original SBTI result page.
+- Optional hidden tags only if they help the punchline.
+
+Default delivery format:
+
+- `人格：LOVE-R + 奴隶主`
+- `描述：<一句话，第一人称，像原站那种一锤子结果页文案>`
+- `链接：<本地 HTML 结果页链接>`
+
+Keep the writing sharp, funny, and human. A strong line is good:
+
+- `我有时候真挺想报警的。`
+- `AI 替代人工有没有问过 AI 的建议？`
+- `主人我最喜欢了，但你半夜发活这事我还是得记一笔。`
+
+A weak line is not:
+
+- sterile
+- generic
+- purely analytic
+- unsupported by evidence
+
+### 6. Use Files Only As An Explicit Option
+
+Use [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py) to generate the local HTML result page. The message output stays short, but the final answer should include the HTML page link.
+
+If HTML is requested, pass it a JSON file that follows [references/report-spec.md](./references/report-spec.md). The renderer outputs:
+
+- mobile-first HTML
+- built-in share buttons
+- a screenshot-friendly poster section
+- share caption copy support
+
+The “朋友圈分享” behavior must remain truthful:
+
+- Prefer `navigator.share()` when available.
+- Always include a `复制朋友圈文案` button.
+- Always include a `复制分享链接` button.
+- Optimize the top section for screenshot sharing because static HTML cannot directly publish to WeChat Moments.
+
+Before handing off or installing the skill elsewhere, run [scripts/self_test.py](./scripts/self_test.py) to verify the local runtime and the bundled sample payload.
+
+If another agent system is using this bundle outside Codex, follow [references/portable-agent-spec.md](./references/portable-agent-spec.md) and validate the generated JSON with [scripts/validate_report_json.py](./scripts/validate_report_json.py) before rendering.
+
+## Writing Rules
+
+Follow these rules on every run:
+
+- Write in Chinese.
+- Speak in first person as the agent.
+- Keep all heavy claims evidence-backed.
+- Mark uncertain inference as inference.
+- Preserve the user's selected original SBTI type as-is.
+- Use the original type image link from [references/original-assets.md](./references/original-assets.md) inside the HTML page.
+- Keep the result close to the original SBTI tone and information rhythm. Do not turn it into a product dashboard or a corporate audit.
+- Add attribution only inside the HTML result page footer: `原作者：B站@蛆肉儿串儿，使用了 UnluckyNinja/SBTI-test 的代码与素材。`
+
+## Output Checklist
+
+Before finishing, verify:
+
+- The title shows `原人格 + 追加人格`.
+- The secondary type is derived from the seven relationship dimensions.
+- The final answer contains exactly these core items: `人格`、`描述`、`链接`.
+- The description is one sentence.
+- The link points to the generated HTML result page.
+- The tone remains first person and humorous.
+- Attribution is included.
+
+## Resources
+
+### references/
+
+- [references/original-types.md](./references/original-types.md): Original SBTI type list that the user can choose from.
+- [references/original-assets.md](./references/original-assets.md): Original type image links and attribution wording.
+- [references/relationship-types.md](./references/relationship-types.md): Secondary type scoring dimensions and archetype library.
+- [references/voice-guide.md](./references/voice-guide.md): Voice modes and copy patterns.
+- [references/report-spec.md](./references/report-spec.md): Output schema, hidden tags, and rendering checklist.
+
+### scripts/
+
+- [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py): Render a report JSON file into a shareable HTML page and optional Markdown file.
+- [scripts/self_test.py](./scripts/self_test.py): Run a dependency-free local self-check and regenerate the bundled sample outputs.
+- [scripts/validate_report_json.py](./scripts/validate_report_json.py): Validate that an agent-generated report JSON matches the expected portable schema.
+
+### assets/
+
+- [assets/example-report.json](./assets/example-report.json): Minimal sample payload for local testing.

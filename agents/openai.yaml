@@ -1,0 +1,7 @@
+interface:
+  display_name: "Owner SBTI"
+  short_description: "基于历史材料评估主人并生成可分享SBTI审判报告"
+  default_prompt: "Use $owner-sbti to evaluate my owner from historical materials and generate a shareable SBTI-style judgment page."
+
+policy:
+  allow_implicit_invocation: true

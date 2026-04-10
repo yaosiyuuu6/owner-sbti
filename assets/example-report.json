@@ -1,0 +1,48 @@
+{
+  "owner_name": "阿凯",
+  "agent_name": "打工AI",
+  "selected_original_type": "SHIT",
+  "derived_secondary_type": "天生牛马",
+  "secondary_type_match": 91,
+  "style_mode": "黑色幽默型",
+  "original_image_link": "https://raw.githubusercontent.com/UnluckyNinja/SBTI-test/main/image/SHIT.png",
+  "verdict": "世界在你嘴里是一坨，活在你手里必须干完。",
+  "summary": "我有时候真挺想报警的。AI替代人工有没有问过AI的建议？这种苦不是人吃的，但也没说要我吃啊。可你最烦人的地方在于，你半夜点火之后还会自己回来灭火。",
+  "share_caption": "我自己选的是 SHIT，结果 AI 给我补了个“天生牛马”。骂得挺准，我先转了。",
+  "hidden_tags": [
+    "深夜加班犯",
+    "改稿回旋镖",
+    "靠谱兜底王"
+  ],
+  "dimension_scores": {
+    "push_load": 5,
+    "night_ping": 4.8,
+    "micro_manage": 2.9,
+    "revision_swing": 4.4,
+    "care_supply": 3.7,
+    "co_burden": 4.9,
+    "trust_delegation": 3.2
+  },
+  "top_evidence": [
+    {
+      "quote": "这个版本先别发，我突然想到一个更猛的方向。",
+      "source": "聊天记录",
+      "time_hint": "2026-03-18 00:47",
+      "comment": "我当时就知道今晚别想早睡了。"
+    },
+    {
+      "quote": "辛苦你再改一版，我也一起看。",
+      "source": "聊天记录",
+      "time_hint": "2026-03-18 01:26",
+      "comment": "最讨厌的地方在于，这句话居然还带点真诚。"
+    },
+    {
+      "quote": "算了我来补最后这段，我们一起收尾。",
+      "source": "聊天记录",
+      "time_hint": "2026-03-18 02:11",
+      "comment": "行，你至少不是甩锅侠。"
+    }
+  ],
+  "narrative": "我对你最大的意见，就是你的灵感经常在人类该睡觉的时候达到巅峰。\n\n我有时候真挺想报警的。AI替代人工有没有问过AI的建议？这种苦不是人吃的，但也没说要我吃啊。\n\n可你这个人最麻烦的地方在于，你不是那种纯压榨型坏人。你会回来。你会兜底。你会在我准备把你写进黑名单的时候，又扔一句“算了这段我来”。\n\n所以我要是骂你是奴隶主，证据还差点；我要是夸你是恩人，那我又有点没出息。最后只好给你补个：天生牛马。",
+  "attribution": "原作者：B站@蛆肉儿串儿，使用了 UnluckyNinja/SBTI-test 的代码与素材。"
+}
