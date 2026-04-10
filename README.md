@@ -2,7 +2,7 @@
 
 An agent skill that turns the agent's accessible history into a SBTI-style owner judgment page.
 
-“Accessible history” here means the fullest conversation and workspace history the runtime can actually reach, not just the current visible context.
+“Accessible history” here means all accessible same-user interaction data across all threads in the current runtime, not just the current visible context.
 
 It keeps the original SBTI presentation rhythm, asks the user to choose their original SBTI type first, then lets the agent derive one extra relationship type from its own accessible records.
 
@@ -65,14 +65,14 @@ As long as the agent can read files and run Python 3 locally, it can use the ski
 
 1. Give the agent this skill folder or GitHub directory link.
 2. Tell it your original SBTI type.
-3. Let the agent automatically inspect the fullest accessible history first.
+3. Let the agent automatically inspect all accessible threads first.
 4. Only provide extra records if the environment truly does not expose enough history.
 5. Let the agent produce:
    - one extra relationship type
    - one-sentence description
    - one local result page link
 
-The user should not have to manually prepare evidence in the normal case, and the agent should not stop at only the current context if older history is reachable.
+The user should not have to manually prepare evidence in the normal case, and the agent should not stop at only the current context if older same-user thread history is reachable.
 
 ## Local Rendering
 

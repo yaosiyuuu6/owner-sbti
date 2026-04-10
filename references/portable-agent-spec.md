@@ -17,12 +17,12 @@ Default behavior:
 1. Read `SKILL.md`.
 2. Read `references/original-assets.md`, `references/relationship-types.md`, and `references/voice-guide.md`.
 3. Ask for the user-selected original SBTI type if missing.
-4. Automatically inspect the agent's own accessible history, preferring the full reachable history over only the current context window.
+4. Automatically inspect the agent's own accessible history, preferring all accessible same-user threads over only the current context window.
 5. Generate one local HTML result page.
 6. Return only `人格 + 描述 + 链接`.
 
 Do not ask the user to manually provide evidence if the agent can already inspect enough history in the active environment.
-Do not stop at the current context if the runtime can access older turns, thread history, or broader workspace traces.
+Do not stop at the current context if the runtime can access older same-user threads or broader workspace traces.
 
 Optional behavior if files are explicitly requested:
 
@@ -45,7 +45,7 @@ No matter which agent runtime is used, keep these rules fixed:
 
 - The user chooses the original SBTI type.
 - The agent must first mine its own accessible history for evidence.
-- The agent should prefer the full reachable history, not just the current visible context.
+- The agent should prefer all accessible same-user threads, not just the current visible context.
 - The agent derives only the secondary relationship type.
 - The report voice stays first person from the agent.
 - Strong claims must be evidence-backed.
@@ -60,7 +60,7 @@ Use a prompt like this in non-Codex runtimes:
 ```text
 Read SKILL.md, references/original-assets.md, references/relationship-types.md, and references/voice-guide.md.
 The user-selected original SBTI type is: <TYPE>.
-First inspect your own accessible history in this task and environment for evidence, starting with the broadest reachable history rather than only the current context.
+First inspect your own accessible history in this task and environment for evidence, starting with all accessible same-user threads rather than only the current context.
 Only ask for extra records if the accessible history is genuinely not enough.
 Generate one local HTML page from the bundled renderer, then return only:
 人格：
