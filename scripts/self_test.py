@@ -33,6 +33,7 @@ def main() -> None:
         skill_dir / "references" / "portable-agent-spec.md",
         skill_dir / "references" / "voice-guide.md",
         skill_dir / "references" / "report-spec.md",
+        skill_dir / "scripts" / "finalize_report.py",
         skill_dir / "scripts" / "render_owner_sbti.py",
         skill_dir / "scripts" / "validate_report_json.py",
         skill_dir / "assets" / "example-report.json",
@@ -61,6 +62,7 @@ def main() -> None:
     md_out = skill_dir / "assets" / "example-report.md"
     render_script = skill_dir / "scripts" / "render_owner_sbti.py"
     validate_script = skill_dir / "scripts" / "validate_report_json.py"
+    finalize_script = skill_dir / "scripts" / "finalize_report.py"
 
     validate_result = subprocess.run(
         [sys.executable, str(validate_script), "--input", str(sample)],
@@ -88,6 +90,23 @@ def main() -> None:
     if result.returncode != 0:
         fail(f"Renderer failed:\n{result.stderr.strip()}")
     ok("Renderer executed successfully")
+
+    finalize_result = subprocess.run(
+        [
+            sys.executable,
+            str(finalize_script),
+            "--input",
+            str(sample),
+            "--no-publish",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if finalize_result.returncode != 0:
+        fail(f"Finalize script failed:\n{finalize_result.stderr.strip() or finalize_result.stdout.strip()}")
+    if str(html_out) not in finalize_result.stdout:
+        fail("Finalize script did not return the expected local HTML path in no-publish mode")
+    ok("Finalize script executed successfully")
 
     html_text = html_out.read_text(encoding="utf-8")
     md_text = md_out.read_text(encoding="utf-8")

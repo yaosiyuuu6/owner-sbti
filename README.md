@@ -18,7 +18,7 @@ The default final output is:
 - Uses the user's selected original SBTI type as the base identity
 - Derives one extra agent-side relationship type such as `奴隶主` or `天生牛马`
 - Writes the copy in first-person agent voice
-- Generates a local HTML result page that is easy to open and share
+- Generates a mobile-first HTML result page and returns a public link when publish config is available
 - Works as a portable local skill bundle for Codex, Claude Code, OpenClaw, and similar agents
 
 ## Result Format
@@ -83,7 +83,19 @@ Validate a payload:
 python3 scripts/validate_report_json.py --input /path/to/report.json
 ```
 
-Render HTML and Markdown:
+Finalize the report in one step. This validates the JSON, renders local HTML and Markdown, then auto-publishes and prints a phone-openable link when publish config is available:
+
+```bash
+python3 scripts/finalize_report.py --input /path/to/report.json
+```
+
+Force local-only output:
+
+```bash
+python3 scripts/finalize_report.py --input /path/to/report.json --no-publish
+```
+
+Render HTML and Markdown manually:
 
 ```bash
 python3 scripts/render_owner_sbti.py \
@@ -153,6 +165,7 @@ owner-sbti/
 - `references/report-spec.md`: report JSON contract and page requirements
 - `references/voice-guide.md`: first-person tone system
 - `scripts/render_owner_sbti.py`: HTML renderer
+- `scripts/finalize_report.py`: validate, render, and auto-publish in one step
 - `scripts/publish_report.py`: uploads a report payload and prints a public URL
 - `scripts/serve_report.py`: localhost preview server for generated reports
 - `scripts/validate_report_json.py`: payload validator
@@ -166,4 +179,4 @@ owner-sbti/
 - The agent only derives the extra relationship type.
 - The page is mobile-first and intentionally styled to stay close to the original SBTI result-page feel.
 - This repository is for local use and distribution as a skill bundle, not as a standalone SaaS product.
-- A phone-openable link requires a public publish step; localhost and file paths are only local previews.
+- The default happy path is now `finalize_report.py`: publish if possible, otherwise fall back to a local HTML path.

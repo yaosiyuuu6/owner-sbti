@@ -30,7 +30,15 @@ Optional behavior if files are explicitly requested:
 1. Generate a report JSON object that matches [report-spec.md](./report-spec.md).
 2. Run the bundled scripts locally.
 
-The optional local workflow is:
+The default local workflow is:
+
+```bash
+python3 scripts/finalize_report.py --input /path/to/report.json
+```
+
+That command validates the payload, renders the local files, and returns a public `https://...` link when publish config is available. If publish is not available, it falls back to the local HTML path.
+
+The manual local workflow is:
 
 ```bash
 python3 scripts/validate_report_json.py --input /path/to/report.json

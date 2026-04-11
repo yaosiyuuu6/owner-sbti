@@ -144,9 +144,13 @@ A weak line is not:
 
 ### 6. Generate And Publish
 
-Use [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py) to generate the local HTML result page. The message output stays short, but the final answer should include the HTML page link.
+Prefer [scripts/finalize_report.py](./scripts/finalize_report.py) as the default last mile. It validates the JSON, renders the local HTML result page, attempts public publish, and prints the best link to return.
 
-If the runtime can keep a lightweight local process alive, use [scripts/serve_report.py](./scripts/serve_report.py) to serve the generated HTML over localhost and return an `http://127.0.0.1:...` preview link instead of a raw file path.
+If public publish is configured, `finalize_report.py` should return the public `https://...` URL by default.
+
+If public publish is unavailable or fails, `finalize_report.py` should fall back to the local HTML path.
+
+If the runtime can keep a lightweight local process alive and the user explicitly wants a clickable local preview instead of a file path, use [scripts/serve_report.py](./scripts/serve_report.py) to serve the generated HTML over localhost and return an `http://127.0.0.1:...` preview link.
 
 If the user wants a phone-openable link, prefer public publish mode over localhost. Use [scripts/publish_report.py](./scripts/publish_report.py) to upload the generated report JSON to a publish service and return the resulting `https://...` URL.
 
@@ -205,6 +209,7 @@ Before finishing, verify:
 
 ### scripts/
 
+- [scripts/finalize_report.py](./scripts/finalize_report.py): Validate, render, and auto-publish a report JSON payload, then print the best result link.
 - [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py): Render a report JSON file into a shareable HTML page and optional Markdown file.
 - [scripts/publish_report.py](./scripts/publish_report.py): Upload a report JSON payload to a publish service and print a public URL.
 - [scripts/serve_report.py](./scripts/serve_report.py): Serve a generated HTML report over localhost and print a clickable preview URL.
