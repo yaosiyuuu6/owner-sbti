@@ -28,7 +28,7 @@ The expected response is short:
 ```text
 人格：SHIT + 控制狂
 描述：我不太敢糊弄你，因为你连哪里还有 AI 味、哪里不像原版、哪里差一口气都要亲自抓出来重做。
-链接：/absolute/path/to/result.html
+链接：https://example.com/r/abc123
 ```
 
 Attribution is shown inside the HTML page footer:
@@ -71,7 +71,7 @@ As long as the agent can read files and run Python 3 locally, it can use the ski
 6. Let the agent produce:
    - one extra relationship type
    - one-sentence description
-   - one local result page link
+   - one result page link
 
 The user should not have to manually prepare evidence in the normal case, and the agent should not stop at only the current context if older same-user thread history is reachable. If that broader history needs permission, the agent should ask for permission instead of pretending the narrower context is enough.
 
@@ -92,6 +92,34 @@ python3 scripts/render_owner_sbti.py \
   --output-md /path/to/report.md
 ```
 
+Publish the generated JSON to a public report service and print a phone-openable URL:
+
+```bash
+python3 scripts/publish_report.py \
+  --input /path/to/report.json \
+  --endpoint https://your-report-service.example.com
+```
+
+Serve the generated report over localhost and return a clickable link:
+
+```bash
+python3 scripts/serve_report.py --file /path/to/report.html --port 8765
+```
+
+This prints a link like `http://127.0.0.1:8765/report.html` and keeps a small local server running.
+
+## Public Links
+
+If you want users to open reports directly on mobile, do not rely on local files or localhost.
+
+Recommended flow:
+
+1. Generate `report.json`
+2. Upload it to a public report service
+3. Return the resulting `https://...` link
+
+This repository includes a minimal Cloudflare Worker scaffold at [publisher/cloudflare-worker](./publisher/cloudflare-worker) for that purpose.
+
 Run the bundled self-test:
 
 ```bash
@@ -106,6 +134,7 @@ owner-sbti/
 ├── README.md
 ├── agents/
 ├── assets/
+├── publisher/
 ├── references/
 └── scripts/
 ```
@@ -118,8 +147,11 @@ owner-sbti/
 - `references/report-spec.md`: report JSON contract and page requirements
 - `references/voice-guide.md`: first-person tone system
 - `scripts/render_owner_sbti.py`: HTML renderer
+- `scripts/publish_report.py`: uploads a report payload and prints a public URL
+- `scripts/serve_report.py`: localhost preview server for generated reports
 - `scripts/validate_report_json.py`: payload validator
 - `scripts/self_test.py`: local smoke test
+- `publisher/cloudflare-worker`: minimal public publish service for mobile-openable links
 
 ## Notes
 
@@ -127,3 +159,4 @@ owner-sbti/
 - The agent only derives the extra relationship type.
 - The page is mobile-first and intentionally styled to stay close to the original SBTI result-page feel.
 - This repository is for local use and distribution as a skill bundle, not as a standalone SaaS product.
+- A phone-openable link requires a public publish step; localhost and file paths are only local previews.

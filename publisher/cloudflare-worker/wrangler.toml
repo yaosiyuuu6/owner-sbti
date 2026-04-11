@@ -1,0 +1,12 @@
+name = "owner-sbti-publisher"
+main = "src/index.js"
+compatibility_date = "2026-04-10"
+
+[[kv_namespaces]]
+binding = "REPORTS"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_YOUR_PREVIEW_KV_NAMESPACE_ID"
+
+[vars]
+SITE_ORIGIN = "https://example.com"
+

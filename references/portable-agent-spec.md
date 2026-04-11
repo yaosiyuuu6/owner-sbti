@@ -40,6 +40,24 @@ python3 scripts/render_owner_sbti.py \
   --output-md /path/to/report.md
 ```
 
+To return a phone-openable public URL instead of a local file path:
+
+```bash
+python3 scripts/publish_report.py \
+  --input /path/to/report.json \
+  --endpoint https://your-report-service.example.com
+```
+
+If the user wants a directly openable link instead of a file path, start a local preview server:
+
+```bash
+python3 scripts/serve_report.py --file /path/to/report.html --port 8765
+```
+
+Return the printed localhost URL.
+
+If the user specifically wants a link that works on mobile or on another device, do not use localhost. Publish the report JSON to a public endpoint and return the resulting `https://...` URL instead.
+
 ## Required Reasoning Rules
 
 No matter which agent runtime is used, keep these rules fixed:

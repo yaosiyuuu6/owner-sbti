@@ -1,6 +1,6 @@
 # Report Spec
 
-Default output is short chat text plus one generated local HTML result page link.
+Default output is short chat text plus one generated HTML result page link.
 
 ## Default Chat Output
 
@@ -14,7 +14,7 @@ Where:
 
 - `人格` = `selected_original_type + derived_secondary_type`
 - `描述` = one short first-person sentence in the style of the original SBTI page
-- `链接` = generated local HTML result page link
+- `链接` = public `https://...` report URL when publish mode is configured, otherwise a local HTML result page link
 
 Do not include the attribution line in the chat message. Put attribution only inside the HTML result page.
 

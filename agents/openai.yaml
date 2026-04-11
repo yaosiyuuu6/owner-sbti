@@ -1,7 +1,7 @@
 interface:
   display_name: "Owner SBTI"
   short_description: "先让用户选择SBTI，再基于同一用户在当前运行环境中所有可访问线程的交互数据自动评估；如需额外权限先询问"
-  default_prompt: "Use $owner-sbti to ask for my original SBTI type first, then automatically inspect all accessible same-user threads in the current runtime, not just the current context. If broader history requires permission, ask for that permission first, then generate an SBTI-style judgment result page."
+  default_prompt: "Use $owner-sbti to ask for my original SBTI type first, then automatically inspect all accessible same-user threads in the current runtime, not just the current context. If broader history requires permission, ask for that permission first. If a phone-openable link is needed, publish the report and return the resulting public URL."
 
 policy:
   allow_implicit_invocation: true

@@ -119,7 +119,7 @@ Use one primary mode and optionally one light secondary mode for contrast. All c
 Produce:
 
 - A final personality title in the form `原人格 + 追加人格`.
-- One local HTML result page that embeds the original type image from the SBTI-test asset set.
+- One HTML result page that embeds the original type image from the SBTI-test asset set.
 - One short first-person description that reads like the original SBTI result page.
 - Optional hidden tags only if they help the punchline.
 
@@ -127,7 +127,7 @@ Default delivery format:
 
 - `人格：LOVE-R + 奴隶主`
 - `描述：<一句话，第一人称，像原站那种一锤子结果页文案>`
-- `链接：<本地 HTML 结果页链接>`
+- `链接：<优先返回公网可打开链接；没有发布能力时再退回本地 HTML 结果页链接>`
 
 Keep the writing sharp, funny, and human. A strong line is good:
 
@@ -142,9 +142,15 @@ A weak line is not:
 - purely analytic
 - unsupported by evidence
 
-### 6. Use Files Only As Needed
+### 6. Generate And Publish
 
 Use [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py) to generate the local HTML result page. The message output stays short, but the final answer should include the HTML page link.
+
+If the runtime can keep a lightweight local process alive, use [scripts/serve_report.py](./scripts/serve_report.py) to serve the generated HTML over localhost and return an `http://127.0.0.1:...` preview link instead of a raw file path.
+
+If the user wants a phone-openable link, prefer public publish mode over localhost. Use [scripts/publish_report.py](./scripts/publish_report.py) to upload the generated report JSON to a publish service and return the resulting `https://...` URL.
+
+The recommended publish target is the bundled Cloudflare Worker scaffold in [publisher/cloudflare-worker](./publisher/cloudflare-worker), but any service that accepts the report JSON and returns a public URL is acceptable.
 
 If HTML is requested, pass it a JSON file that follows [references/report-spec.md](./references/report-spec.md). The renderer outputs:
 
@@ -198,8 +204,14 @@ Before finishing, verify:
 ### scripts/
 
 - [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py): Render a report JSON file into a shareable HTML page and optional Markdown file.
+- [scripts/publish_report.py](./scripts/publish_report.py): Upload a report JSON payload to a publish service and print a public URL.
+- [scripts/serve_report.py](./scripts/serve_report.py): Serve a generated HTML report over localhost and print a clickable preview URL.
 - [scripts/self_test.py](./scripts/self_test.py): Run a dependency-free local self-check and regenerate the bundled sample outputs.
 - [scripts/validate_report_json.py](./scripts/validate_report_json.py): Validate that an agent-generated report JSON matches the expected portable schema.
+
+### publisher/
+
+- [publisher/cloudflare-worker](./publisher/cloudflare-worker): Minimal public report service that stores report JSON and returns phone-openable links.
 
 ### assets/
 
