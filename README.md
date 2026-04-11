@@ -34,7 +34,7 @@ The default final output is:
 - Uses the user's selected original SBTI type as the base identity
 - Derives one extra agent-side relationship type such as `奴隶主` or `天生牛马`
 - Writes the copy in first-person agent voice
-- Generates a mobile-first HTML result page and returns a public link when publish config is available
+- Generates a mobile-first HTML result page and returns a public link by default
 - Works as a portable local skill bundle for Codex, Claude Code, OpenClaw, and similar agents
 
 ## Result Format
@@ -101,7 +101,7 @@ Validate a payload:
 python3 scripts/validate_report_json.py --input /path/to/report.json
 ```
 
-Finalize the report in one step. This validates the JSON, renders local HTML and Markdown, then auto-publishes and prints a phone-openable link when publish config is available:
+Finalize the report in one step. This validates the JSON, renders local HTML and Markdown, then auto-publishes and prints a phone-openable link by default:
 
 ```bash
 python3 scripts/finalize_report.py --input /path/to/report.json
@@ -130,7 +130,7 @@ python3 scripts/publish_report.py \
   --endpoint https://your-report-service.example.com
 ```
 
-`publish_report.py` also reads `OWNER_SBTI_PUBLISH_ENDPOINT` and `OWNER_SBTI_PUBLISH_TOKEN` from either:
+`publish_report.py` uses the bundled public endpoint by default. It also reads `OWNER_SBTI_PUBLISH_ENDPOINT` and `OWNER_SBTI_PUBLISH_TOKEN` from either:
 
 - a local `.publish.env` file in the repo root
 - `~/.owner-sbti.env`
@@ -145,6 +145,13 @@ python3 scripts/serve_report.py --file /path/to/report.html --port 8765
 This prints a link like `http://127.0.0.1:8765/report.html` and keeps a small local server running.
 
 ## Public Links
+
+The bundled public endpoint is anonymous but guarded:
+
+- per-IP write rate limit
+- payload size limit
+- automatic report expiration
+- strict payload shape checks
 
 If you want users to open reports directly on mobile, do not rely on local files or localhost.
 

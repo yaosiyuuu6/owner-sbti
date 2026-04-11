@@ -155,17 +155,17 @@ A weak line is not:
 
 Prefer [scripts/finalize_report.py](./scripts/finalize_report.py) as the default last mile. It validates the JSON, renders the local HTML result page, attempts public publish, and prints the best link to return.
 
-If public publish is configured, `finalize_report.py` should return the public `https://...` URL by default.
+`finalize_report.py` should return the bundled public `https://...` URL by default.
 
 If public publish is unavailable or fails, `finalize_report.py` should fall back to the local HTML path.
 
 If the runtime can keep a lightweight local process alive and the user explicitly wants a clickable local preview instead of a file path, use [scripts/serve_report.py](./scripts/serve_report.py) to serve the generated HTML over localhost and return an `http://127.0.0.1:...` preview link.
 
-If the user wants a phone-openable link, prefer public publish mode over localhost. Use [scripts/publish_report.py](./scripts/publish_report.py) to upload the generated report JSON to a publish service and return the resulting `https://...` URL.
+If the user wants a phone-openable link, prefer public publish mode over localhost. Use [scripts/publish_report.py](./scripts/publish_report.py) to upload the generated report JSON to the bundled public publish service and return the resulting `https://...` URL.
 
-The recommended publish target is the bundled Cloudflare Worker scaffold in [publisher/cloudflare-worker](./publisher/cloudflare-worker), but any service that accepts the report JSON and returns a public URL is acceptable.
+The bundled Cloudflare Worker is the default publish target. It is configured as a guarded anonymous endpoint with rate limits, payload-size limits, automatic expiration, and strict payload validation. Any other service that accepts the report JSON and returns a public URL is also acceptable.
 
-`publish_report.py` can read `OWNER_SBTI_PUBLISH_ENDPOINT` and `OWNER_SBTI_PUBLISH_TOKEN` from a local `.publish.env` file in the skill root, from `~/.owner-sbti.env`, or from the shell environment. Prefer that over hardcoding secrets into the repository.
+`publish_report.py` defaults to the bundled public endpoint. It can also read `OWNER_SBTI_PUBLISH_ENDPOINT` and `OWNER_SBTI_PUBLISH_TOKEN` from a local `.publish.env` file in the skill root, from `~/.owner-sbti.env`, or from the shell environment if you want to override the default target.
 
 If HTML is requested, pass it a JSON file that follows [references/report-spec.md](./references/report-spec.md). The renderer outputs:
 

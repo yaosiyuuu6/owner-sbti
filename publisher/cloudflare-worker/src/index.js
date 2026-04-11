@@ -12,6 +12,11 @@ function badRequest(message, status = 400) {
   return json({ error: message }, { status });
 }
 
+const DEFAULT_MAX_REPORT_BYTES = 64 * 1024;
+const DEFAULT_REPORT_TTL_SECONDS = 60 * 60 * 24 * 14;
+const DEFAULT_RATE_LIMIT_MAX_WRITES = 20;
+const DEFAULT_RATE_LIMIT_WINDOW_SECONDS = 60 * 10;
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -27,6 +32,11 @@ function randomId() {
   const bytes = crypto.getRandomValues(new Uint8Array(10));
   for (const byte of bytes) out += alphabet[byte % alphabet.length];
   return out;
+}
+
+function envInt(env, key, fallback) {
+  const raw = Number(env[key] ?? fallback);
+  return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : fallback;
 }
 
 function scoreRows(scores = {}) {
@@ -225,10 +235,45 @@ function renderPage(report) {
 }
 
 function requireAuth(request, env) {
+  if (String(env.REQUIRE_AUTH || "").toLowerCase() !== "true") return null;
   if (!env.PUBLISH_TOKEN) return null;
   const auth = request.headers.get("authorization") || "";
   const expected = `Bearer ${env.PUBLISH_TOKEN}`;
   if (auth !== expected) return badRequest("Unauthorized", 401);
+  return null;
+}
+
+async function checkRateLimit(request, env) {
+  const ip =
+    request.headers.get("CF-Connecting-IP") ||
+    request.headers.get("x-forwarded-for") ||
+    "unknown";
+  const windowSeconds = envInt(env, "RATE_LIMIT_WINDOW_SECONDS", DEFAULT_RATE_LIMIT_WINDOW_SECONDS);
+  const maxWrites = envInt(env, "RATE_LIMIT_MAX_WRITES", DEFAULT_RATE_LIMIT_MAX_WRITES);
+  const bucket = Math.floor(Date.now() / 1000 / windowSeconds);
+  const key = `rate:${ip}:${bucket}`;
+  const current = Number((await env.REPORTS.get(key)) || "0");
+  if (current >= maxWrites) {
+    return badRequest("Rate limit exceeded", 429);
+  }
+  await env.REPORTS.put(key, String(current + 1), { expirationTtl: windowSeconds * 2 });
+  return null;
+}
+
+function validatePayloadShape(payload) {
+  if (!payload || typeof payload !== "object") return "Invalid JSON body";
+  if (!payload.selected_original_type || !payload.derived_secondary_type) {
+    return "Missing required report fields";
+  }
+  if (typeof payload.summary !== "string" || !payload.summary.trim()) {
+    return "Missing summary";
+  }
+  if (!Array.isArray(payload.hidden_tags) || payload.hidden_tags.length > 8) {
+    return "Invalid hidden_tags";
+  }
+  if (!Array.isArray(payload.top_evidence) || payload.top_evidence.length < 1 || payload.top_evidence.length > 10) {
+    return "Invalid top_evidence";
+  }
   return null;
 }
 
@@ -240,22 +285,32 @@ export default {
       const denied = requireAuth(request, env);
       if (denied) return denied;
 
+      const contentLength = Number(request.headers.get("content-length") || "0");
+      const maxBytes = envInt(env, "MAX_REPORT_BYTES", DEFAULT_MAX_REPORT_BYTES);
+      if (contentLength && contentLength > maxBytes) {
+        return badRequest("Report payload too large", 413);
+      }
+
+      const limited = await checkRateLimit(request, env);
+      if (limited) return limited;
+
       let payload;
       try {
         payload = await request.json();
       } catch {
         return badRequest("Invalid JSON body");
       }
-      if (!payload || !payload.selected_original_type || !payload.derived_secondary_type) {
-        return badRequest("Missing required report fields");
-      }
+      const payloadError = validatePayloadShape(payload);
+      if (payloadError) return badRequest(payloadError);
 
       const id = randomId();
       const record = {
         ...payload,
         created_at: new Date().toISOString(),
       };
-      await env.REPORTS.put(`report:${id}`, JSON.stringify(record));
+      await env.REPORTS.put(`report:${id}`, JSON.stringify(record), {
+        expirationTtl: envInt(env, "REPORT_TTL_SECONDS", DEFAULT_REPORT_TTL_SECONDS),
+      });
 
       const origin = env.SITE_ORIGIN || url.origin;
       return json({

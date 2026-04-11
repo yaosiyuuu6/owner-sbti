@@ -55,7 +55,7 @@ The default local workflow is:
 python3 scripts/finalize_report.py --input /path/to/report.json
 ```
 
-That command validates the payload, renders the local files, and returns a public `https://...` link when publish config is available. If publish is not available, it falls back to the local HTML path.
+That command validates the payload, renders the local files, and returns a public `https://...` link through the bundled default endpoint. If publish is unavailable, it falls back to the local HTML path.
 
 The manual local workflow is:
 
@@ -84,6 +84,13 @@ python3 scripts/serve_report.py --file /path/to/report.html --port 8765
 Return the printed localhost URL.
 
 If the user specifically wants a link that works on mobile or on another device, do not use localhost. Publish the report JSON to a public endpoint and return the resulting `https://...` URL instead.
+
+The bundled endpoint is anonymous but guarded with:
+
+- IP-based rate limits
+- payload-size limits
+- automatic TTL expiration
+- strict payload validation
 
 ## Required Reasoning Rules
 

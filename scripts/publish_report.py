@@ -13,6 +13,8 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+DEFAULT_PUBLIC_ENDPOINT = "https://owner-sbti-publisher.yaosiyuuu6-sbti.workers.dev"
+
 
 def load_publish_env() -> None:
     candidates = [
@@ -39,8 +41,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--input", required=True, help="Path to report JSON.")
     parser.add_argument(
         "--endpoint",
-        default=os.environ.get("OWNER_SBTI_PUBLISH_ENDPOINT", ""),
-        help="Publish API base URL. Defaults to OWNER_SBTI_PUBLISH_ENDPOINT.",
+        default=os.environ.get("OWNER_SBTI_PUBLISH_ENDPOINT", DEFAULT_PUBLIC_ENDPOINT),
+        help="Publish API base URL. Defaults to OWNER_SBTI_PUBLISH_ENDPOINT, then the bundled public endpoint.",
     )
     parser.add_argument(
         "--token",
@@ -88,7 +90,7 @@ def publish_with_curl(api_url: str, input_path: Path, token: str) -> str:
 def main() -> None:
     args = parse_args()
     if not args.endpoint:
-        raise SystemExit("Missing publish endpoint. Set --endpoint or OWNER_SBTI_PUBLISH_ENDPOINT.")
+        raise SystemExit("Missing publish endpoint.")
 
     input_path = Path(args.input).expanduser().resolve()
     if not input_path.exists():
