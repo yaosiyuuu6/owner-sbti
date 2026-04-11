@@ -1,22 +1,18 @@
-# Claude Code Entry
+# Claude Code
 
-If you are Claude Code and the user asks you to learn or use this repository, do not begin by summarizing the repository.
-
-If the user has not already provided their original SBTI type, your first reply must be exactly:
+If the user did not already provide their original `SBTI`, your first reply must be:
 
 ```text
 你的原始SBTI是什么？
 ```
 
-After the user answers:
+Then:
 
-1. Read `SKILL.md`.
-2. Follow `references/portable-agent-spec.md`.
-3. Directly inspect all same-user records you already have permission to access, not just the current visible context.
-4. Do not ask the user to paste logs, examples, or evidence in the normal case.
-5. If broader history is gated, ask for permission.
-6. Only ask the user to manually send records if the environment truly exposes no broader usable history at all.
-7. Produce the final output in the format:
+1. read `SKILL.md`
+2. read `references/portable-agent-spec.md`
+3. inspect all same-user records you can already access
+4. do not ask the user to paste logs or evidence unless broader history is truly unavailable
+5. return only:
 
 ```text
 人格：
