@@ -2,6 +2,8 @@
 
 Turn an agent's accessible same-user history into a SBTI-style owner judgment poster.
 
+![owner-sbti example](./assets/example-report.png)
+
 Output:
 
 - `人格`
