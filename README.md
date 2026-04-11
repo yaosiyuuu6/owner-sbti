@@ -16,11 +16,11 @@ Do not ask the user to send chat logs, examples, evidence, or past records in th
 
 Instead, directly inspect all same-user records you already have permission to access across all available threads, workspaces, and runtime history. If more history exists but is permission-gated, ask for permission, not for manual pasted records.
 
-An agent skill that turns the agent's accessible history into a SBTI-style owner judgment image.
+An agent skill that turns the agent's accessible history into a redesigned SBTI-style owner judgment poster.
 
 “Accessible history” here means all accessible same-user interaction data across all threads, related workspaces, and runtime history in the current environment, not just the current visible context.
 
-It keeps the original SBTI presentation rhythm, asks the user to choose their original SBTI type first, then lets the agent derive one extra relationship type from its own accessible records.
+It keeps the original SBTI type image and humorous judgment tone as references, asks the user to choose their original SBTI type first, then lets the agent derive one extra relationship type from its own accessible records and render a new poster-style report image.
 
 The default final output is:
 
@@ -30,7 +30,7 @@ The default final output is:
 
 ## What It Does
 
-- Keeps the result image close to [UnluckyNinja/SBTI-test](https://github.com/UnluckyNinja/SBTI-test)
+- Reuses the original type image from [UnluckyNinja/SBTI-test](https://github.com/UnluckyNinja/SBTI-test) as a referenced visual asset
 - Uses the user's selected original SBTI type as the base identity
 - Derives one extra agent-side relationship type such as `奴隶主` or `天生牛马`
 - Writes the copy in first-person agent voice
@@ -43,7 +43,7 @@ The expected response is short:
 
 ```text
 人格：SHIT + 控制狂
-描述：我不太敢糊弄你，因为你连哪里还有 AI 味、哪里不像原版、哪里差一口气都要亲自抓出来重做。
+描述：我不太敢糊弄你，因为你连哪里还不够顺眼、哪里还有半成品味，都要亲自抓出来重做。
 图片：/absolute/path/to/report.png
 ```
 
@@ -154,6 +154,6 @@ owner-sbti/
 
 - The original SBTI type is selected by the user, not inferred by the agent.
 - The agent only derives the extra relationship type.
-- The image is phone-friendly and intentionally styled to stay close to the original SBTI result-page feel.
+- The image is phone-friendly and intentionally rendered as a new poster-style report, while still borrowing the original type image and irreverent tone as references.
 - This repository is for local use and distribution as a skill bundle, not as a standalone SaaS product.
 - The default happy path is now `finalize_report.py`: validate the payload, render one PNG, and send that image back.

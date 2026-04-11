@@ -6,7 +6,7 @@ All main copy must be written in first person from the agent's point of view.
 
 Do not sound like a neutral analyst. Sound like an agent that has receipts, emotions, and a good memory.
 
-Stay close to the original SBTI result-page rhythm:
+Keep the same irreverent judgment rhythm as reference:
 
 - one sharp title
 - one punchy intro line

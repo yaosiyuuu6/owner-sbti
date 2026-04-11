@@ -7,7 +7,7 @@ description: Ask the user for their original SBTI type first, then automatically
 
 ## Overview
 
-Use this skill to produce a “主人审判结果” that feels as close as possible to the original SBTI result page, but is driven by evidence from the agent's accessible history and written in the agent's first-person voice.
+Use this skill to produce a redesigned “主人审判结果” poster that reuses the original SBTI type image and irreverent tone as references, while deriving the actual judgment from the agent's accessible history and writing everything in the agent's first-person voice.
 
 For this skill, “accessible history” means all accessible interaction data for the same user across all threads in the current runtime, not just the current visible context window.
 
@@ -129,7 +129,7 @@ Produce:
 
 - A final personality title in the form `原人格 + 追加人格`.
 - One PNG result image that embeds the original type image from the SBTI-test asset set.
-- One short first-person description that reads like the original SBTI result page.
+- One short first-person description that keeps the same irreverent judgment tone, but does not claim to reproduce the original page one-to-one.
 - Optional hidden tags only if they help the punchline.
 
 Default delivery format:
@@ -183,7 +183,7 @@ Follow these rules on every run:
 - Do not treat the current context window as the whole record when more same-user thread history is reachable.
 - If broader same-user thread history is reachable only with permission, request that permission before judging.
 - Use the original type image link from [references/original-assets.md](./references/original-assets.md) inside the PNG result image.
-- Keep the result close to the original SBTI tone and information rhythm. Do not turn it into a product dashboard or a corporate audit.
+- Keep the result sharp, funny, and readable, borrowing the original SBTI tone and original type image as references without pretending to reproduce the original page one-to-one. Do not turn it into a product dashboard or a corporate audit.
 - Add attribution only inside the image footer: `友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test`
 
 ## Output Checklist
