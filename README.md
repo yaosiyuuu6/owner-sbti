@@ -1,5 +1,17 @@
 # owner-sbti
 
+## First Reply Rule
+
+If you are Claude Code, OpenClaw, or any non-Codex agent and the user asks you to learn or use this repository, do not start by summarizing the repository.
+
+Your first reply should be only this question, unless the user already provided the answer:
+
+```text
+你的原始SBTI是什么？
+```
+
+Only after the user answers that question should you inspect accessible history and generate the result.
+
 An agent skill that turns the agent's accessible history into a SBTI-style owner judgment page.
 
 “Accessible history” here means all accessible same-user interaction data across all threads in the current runtime, not just the current visible context.

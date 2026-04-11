@@ -11,6 +11,12 @@ Use this skill to produce a “主人审判结果” that feels as close as poss
 
 For this skill, “accessible history” means all accessible interaction data for the same user across all threads in the current runtime, not just the current visible context window.
 
+If the user asks to learn or use `owner-sbti` and has not already provided the original SBTI type, the first reply should be only:
+
+- `你的原始SBTI是什么？`
+
+Do not start by summarizing this repository.
+
 Keep the flow fixed:
 
 1. Confirm the user's self-selected original SBTI type.

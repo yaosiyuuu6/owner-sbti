@@ -1,5 +1,17 @@
 # Portable Agent Spec
 
+## First Reply Rule
+
+If a non-Codex agent is given this repository link and asked to learn or use `owner-sbti`, the first reply must not be a repository summary.
+
+The first reply should be only:
+
+```text
+你的原始SBTI是什么？
+```
+
+Do this unless the user already provided the original SBTI type in the same request.
+
 Use this bundle from any local agent runtime that can:
 
 - read Markdown files
@@ -16,10 +28,12 @@ Default behavior:
 
 1. Read `SKILL.md`.
 2. Read `references/original-assets.md`, `references/relationship-types.md`, and `references/voice-guide.md`.
-3. Ask for the user-selected original SBTI type if missing.
+3. Ask for the user-selected original SBTI type if missing, and do that before summarizing anything.
 4. Automatically inspect the agent's own accessible history, preferring all accessible same-user threads over only the current context window.
 5. Generate one local HTML result page.
 6. Return only `人格 + 描述 + 链接`.
+
+The repository explanation is optional and secondary. It must not replace step 3.
 
 Do not ask the user to manually provide evidence if the agent can already inspect enough history in the active environment.
 Do not stop at the current context if the runtime can access older same-user threads or broader workspace traces.
@@ -87,8 +101,9 @@ Use a prompt like this in non-Codex runtimes:
 
 ```text
 Read SKILL.md, references/original-assets.md, references/relationship-types.md, and references/voice-guide.md.
-The user-selected original SBTI type is: <TYPE>.
-First inspect your own accessible history in this task and environment for evidence, starting with all accessible same-user threads rather than only the current context.
+If the user did not already give their original SBTI type, ask only: 你的原始SBTI是什么？
+Do not summarize the repository before asking that question.
+After the user answers, inspect your own accessible history in this task and environment for evidence, starting with all accessible same-user threads rather than only the current context.
 If broader same-user thread history needs permission, ask for that permission first.
 Only ask for extra records if the accessible history is genuinely not enough.
 Generate one local HTML page from the bundled renderer, then return only:
