@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Local self-test for the owner-sbti skill.
-
-This script intentionally uses only the Python standard library so the skill
-can be checked on a fresh local environment.
-"""
+"""Local self-test for the owner-sbti skill."""
 
 from __future__ import annotations
 
@@ -26,6 +22,7 @@ def main() -> None:
     skill_dir = Path(__file__).resolve().parent.parent
     required = [
         skill_dir / "SKILL.md",
+        skill_dir / "README.md",
         skill_dir / "agents" / "openai.yaml",
         skill_dir / "references" / "original-types.md",
         skill_dir / "references" / "original-assets.md",
@@ -34,7 +31,7 @@ def main() -> None:
         skill_dir / "references" / "voice-guide.md",
         skill_dir / "references" / "report-spec.md",
         skill_dir / "scripts" / "finalize_report.py",
-        skill_dir / "scripts" / "render_owner_sbti.py",
+        skill_dir / "scripts" / "render_owner_sbti_image.py",
         skill_dir / "scripts" / "validate_report_json.py",
         skill_dir / "assets" / "example-report.json",
     ]
@@ -58,11 +55,10 @@ def main() -> None:
             fail(f"Sample payload is missing key: {key}")
     ok("Sample payload shape looks valid")
 
-    html_out = skill_dir / "assets" / "example-report.html"
-    md_out = skill_dir / "assets" / "example-report.md"
-    render_script = skill_dir / "scripts" / "render_owner_sbti.py"
     validate_script = skill_dir / "scripts" / "validate_report_json.py"
+    render_script = skill_dir / "scripts" / "render_owner_sbti_image.py"
     finalize_script = skill_dir / "scripts" / "finalize_report.py"
+    png_out = skill_dir / "assets" / "example-report.png"
 
     validate_result = subprocess.run(
         [sys.executable, str(validate_script), "--input", str(sample)],
@@ -73,23 +69,21 @@ def main() -> None:
         fail(f"Validator failed:\n{validate_result.stderr.strip() or validate_result.stdout.strip()}")
     ok("Validator executed successfully")
 
-    result = subprocess.run(
+    render_result = subprocess.run(
         [
             sys.executable,
             str(render_script),
             "--input",
             str(sample),
-            "--output-html",
-            str(html_out),
-            "--output-md",
-            str(md_out),
+            "--output-png",
+            str(png_out),
         ],
         capture_output=True,
         text=True,
     )
-    if result.returncode != 0:
-        fail(f"Renderer failed:\n{result.stderr.strip()}")
-    ok("Renderer executed successfully")
+    if render_result.returncode != 0:
+        fail(f"Image renderer failed:\n{render_result.stderr.strip() or render_result.stdout.strip()}")
+    ok("Image renderer executed successfully")
 
     finalize_result = subprocess.run(
         [
@@ -97,26 +91,21 @@ def main() -> None:
             str(finalize_script),
             "--input",
             str(sample),
-            "--no-publish",
+            "--output-png",
+            str(png_out),
         ],
         capture_output=True,
         text=True,
     )
     if finalize_result.returncode != 0:
         fail(f"Finalize script failed:\n{finalize_result.stderr.strip() or finalize_result.stdout.strip()}")
-    if str(html_out) not in finalize_result.stdout:
-        fail("Finalize script did not return the expected local HTML path in no-publish mode")
+    if str(png_out) not in finalize_result.stdout:
+        fail("Finalize script did not return the expected PNG path")
     ok("Finalize script executed successfully")
 
-    html_text = html_out.read_text(encoding="utf-8")
-    md_text = md_out.read_text(encoding="utf-8")
-    if data["derived_secondary_type"] not in html_text:
-        fail("Generated HTML is missing the secondary type")
-    if data["attribution"] not in html_text:
-        fail("Generated HTML is missing attribution")
-    if data["verdict"] not in md_text:
-        fail("Generated Markdown is missing the verdict")
-    ok("Generated outputs contain expected content")
+    if not png_out.exists() or png_out.stat().st_size <= 0:
+        fail("Generated PNG is missing or empty")
+    ok("Generated image output exists")
 
     print("[DONE] owner-sbti local self-test passed")
 

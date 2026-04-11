@@ -1,6 +1,6 @@
 ---
 name: owner-sbti
-description: Evaluate an owner or manager from the agent's accessible history and generate a humorous first-person SBTI-style judgment with a user-selected original type, an agent-derived secondary type, and a concise result in the format “人格 + 一句话描述 + 结果链接”. Use when Codex or another local coding agent needs to turn its own accessible chat history, notes, task traces, or work artifacts into a SBTI-like result that closely follows the tone and presentation rhythm of UnluckyNinja/SBTI-test while adding one extra agent-derived personality.
+description: Evaluate an owner or manager from the agent's accessible history and generate a humorous first-person SBTI-style judgment with a user-selected original type, an agent-derived secondary type, and a concise result in the format “人格 + 一句话描述 + 图片”. Use when Codex or another local coding agent needs to turn its own accessible chat history, notes, task traces, or work artifacts into a SBTI-like image result that closely follows the tone and presentation rhythm of UnluckyNinja/SBTI-test while adding one extra agent-derived personality.
 ---
 
 # Owner Sbti
@@ -26,11 +26,11 @@ Keep the flow fixed:
 2. Automatically inspect the agent's own accessible records across all accessible threads and extract evidence.
 3. Derive only the secondary “主仆关系型” type.
 4. Write the report in first person with a clear style mode.
-5. Output `人格 + 一句话描述 + 结果链接`, with the image embedded inside the HTML result page.
+5. Output `人格 + 一句话描述 + 图片`, with the original人格图嵌进最终 PNG 结果图。
 
 This skill is designed to run locally on a clean machine with only Python 3 available. Do not assume third-party Python packages, browser automation, or hosted services are present.
 
-Treat the bundle as portable across agent runtimes. Codex can discover it as a native skill, but Claude Code, OpenClaw, or any other local coding agent can use the same files directly from a GitHub link by reading this `SKILL.md` and the bundled references. The agent should be able to create one local HTML result page and return that page link without any extra manual setup from the user.
+Treat the bundle as portable across agent runtimes. Codex can discover it as a native skill, but Claude Code, OpenClaw, or any other local coding agent can use the same files directly from a GitHub link by reading this `SKILL.md` and the bundled references. The agent should be able to create one local PNG result image and send that image back without any extra manual setup from the user.
 
 ## Required Inputs
 
@@ -128,7 +128,7 @@ Use one primary mode and optionally one light secondary mode for contrast. All c
 Produce:
 
 - A final personality title in the form `原人格 + 追加人格`.
-- One HTML result page that embeds the original type image from the SBTI-test asset set.
+- One PNG result image that embeds the original type image from the SBTI-test asset set.
 - One short first-person description that reads like the original SBTI result page.
 - Optional hidden tags only if they help the punchline.
 
@@ -136,7 +136,7 @@ Default delivery format:
 
 - `人格：LOVE-R + 奴隶主`
 - `描述：<一句话，第一人称，像原站那种一锤子结果页文案>`
-- `链接：<优先返回公网可打开链接；没有发布能力时再退回本地 HTML 结果页链接>`
+- `图片：<直接发送生成出的 PNG；如果当前运行环境不会发图，再退回本地 PNG 路径>`
 
 Keep the writing sharp, funny, and human. A strong line is good:
 
@@ -151,28 +151,20 @@ A weak line is not:
 - purely analytic
 - unsupported by evidence
 
-### 6. Generate And Publish
+### 6. Generate The Image
 
-Prefer [scripts/finalize_report.py](./scripts/finalize_report.py) as the default last mile. It validates the JSON, renders the local HTML result page, attempts public publish, and prints the best link to return.
+Prefer [scripts/finalize_report.py](./scripts/finalize_report.py) as the default last mile. It validates the JSON, renders the local PNG result image, and prints the image path.
 
-`finalize_report.py` should return the bundled public `https://...` URL by default.
+`finalize_report.py` should return the local PNG path by default.
 
-If public publish is unavailable or fails, `finalize_report.py` should fall back to the local HTML path.
+If the runtime can display or upload local images directly, send the generated PNG to the user instead of only printing the path.
 
-If the runtime can keep a lightweight local process alive and the user explicitly wants a clickable local preview instead of a file path, use [scripts/serve_report.py](./scripts/serve_report.py) to serve the generated HTML over localhost and return an `http://127.0.0.1:...` preview link.
+Pass it a JSON file that follows [references/report-spec.md](./references/report-spec.md). The renderer outputs:
 
-If the user wants a phone-openable link, prefer public publish mode over localhost. Use [scripts/publish_report.py](./scripts/publish_report.py) to upload the generated report JSON to the bundled public publish service and return the resulting `https://...` URL.
-
-The bundled Cloudflare Worker is the default publish target. It is configured as a guarded anonymous endpoint with rate limits, payload-size limits, automatic expiration, and strict payload validation. Any other service that accepts the report JSON and returns a public URL is also acceptable.
-
-`publish_report.py` defaults to the bundled public endpoint. It can also read `OWNER_SBTI_PUBLISH_ENDPOINT` and `OWNER_SBTI_PUBLISH_TOKEN` from a local `.publish.env` file in the skill root, from `~/.owner-sbti.env`, or from the shell environment if you want to override the default target.
-
-If HTML is requested, pass it a JSON file that follows [references/report-spec.md](./references/report-spec.md). The renderer outputs:
-
-- mobile-first HTML
-- a screenshot-friendly poster section
+- one phone-friendly PNG
 - the original type image
-- the merged long-form `Agent 编年史` block
+- the short verdict block
+- the merged `Agent 编年史摘录` section
 
 Before handing off or installing the skill elsewhere, run [scripts/self_test.py](./scripts/self_test.py) to verify the local runtime and the bundled sample payload.
 
@@ -190,9 +182,9 @@ Follow these rules on every run:
 - Ask for the original SBTI type, but do not ask for evidence if broader same-user thread history is already accessible.
 - Do not treat the current context window as the whole record when more same-user thread history is reachable.
 - If broader same-user thread history is reachable only with permission, request that permission before judging.
-- Use the original type image link from [references/original-assets.md](./references/original-assets.md) inside the HTML page.
+- Use the original type image link from [references/original-assets.md](./references/original-assets.md) inside the PNG result image.
 - Keep the result close to the original SBTI tone and information rhythm. Do not turn it into a product dashboard or a corporate audit.
-- Add attribution only inside the HTML result page footer: `友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test`
+- Add attribution only inside the image footer: `友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test`
 
 ## Output Checklist
 
@@ -200,9 +192,9 @@ Before finishing, verify:
 
 - The title shows `原人格 + 追加人格`.
 - The secondary type is derived from the seven relationship dimensions.
-- The final answer contains exactly these core items: `人格`、`描述`、`链接`.
+- The final answer contains exactly these core items: `人格`、`描述`、`图片`.
 - The description is one sentence.
-- The link points to the generated HTML result page.
+- The image is the generated PNG result.
 - The tone remains first person and humorous.
 - Attribution is included.
 
@@ -218,16 +210,10 @@ Before finishing, verify:
 
 ### scripts/
 
-- [scripts/finalize_report.py](./scripts/finalize_report.py): Validate, render, and auto-publish a report JSON payload, then print the best result link.
-- [scripts/render_owner_sbti.py](./scripts/render_owner_sbti.py): Render a report JSON file into a shareable HTML page and optional Markdown file.
-- [scripts/publish_report.py](./scripts/publish_report.py): Upload a report JSON payload to a publish service and print a public URL.
-- [scripts/serve_report.py](./scripts/serve_report.py): Serve a generated HTML report over localhost and print a clickable preview URL.
+- [scripts/finalize_report.py](./scripts/finalize_report.py): Validate and render a report JSON payload into a final PNG image, then print the image path.
+- [scripts/render_owner_sbti_image.py](./scripts/render_owner_sbti_image.py): Render a report JSON file into a shareable PNG poster and optional SVG debug file.
 - [scripts/self_test.py](./scripts/self_test.py): Run a dependency-free local self-check and regenerate the bundled sample outputs.
 - [scripts/validate_report_json.py](./scripts/validate_report_json.py): Validate that an agent-generated report JSON matches the expected portable schema.
-
-### publisher/
-
-- [publisher/cloudflare-worker](./publisher/cloudflare-worker): Minimal public report service that stores report JSON and returns phone-openable links.
 
 ### assets/
 

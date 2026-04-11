@@ -1,6 +1,6 @@
 # Report Spec
 
-Default output is short chat text plus one generated HTML result page link.
+Default output is short chat text plus one generated PNG result image.
 
 ## Default Chat Output
 
@@ -8,15 +8,15 @@ Return only these core items:
 
 - `人格`
 - `描述`
-- `链接`
+- `图片`
 
 Where:
 
 - `人格` = `selected_original_type + derived_secondary_type`
 - `描述` = one short first-person sentence in the style of the original SBTI page
-- `链接` = public `https://...` report URL when publish mode is configured, otherwise a local HTML result page link
+- `图片` = the generated PNG image itself when the runtime can send files, otherwise a local PNG path
 
-Do not include the attribution line in the chat message. Put attribution only inside the HTML result page.
+Do not include the attribution line in the chat message. Put attribution only inside the image footer.
 
 ## Required Data Fields
 
@@ -41,7 +41,7 @@ Optional but recommended:
 
 - `original_image_link`
 - `attribution`
-- `result_page_path`
+- `result_image_path`
 
 ## Suggested JSON Shape
 
@@ -93,27 +93,25 @@ Use only evidence-backed tags:
 
 ## Rendering Checklist
 
-Use this section only when the user explicitly asks for HTML.
-
-The final HTML must include:
+The final PNG must include:
 
 - The original type image
 - A hero section with `原人格 + 追加人格`
 - A short verdict line
 - One dense first-person description block
 - Optional hidden tags
-- An `Agent 编年史` block that merges memoir and receipts into one long first-person section
+- An `Agent 编年史摘录` block
 - Attribution near the bottom
 
-Prefer this content shape for the merged chronicle:
+Prefer this content shape for the chronicle excerpt:
 
-- around `1000` Chinese characters when the user asks for a long version
-- prefer dated sections such as `某年某月某日 某时某分某秒` when the user wants a stronger “翻旧账” feeling
+- compact enough for one phone-friendly long image
+- still reads like “翻旧账”
 - autobiographical voice from the agent's birth to the current judgment
-- evidence woven into the prose, with direct quotes preserved as receipts
+- evidence woven into the prose, with direct quotes preserved as receipts when useful
 
-## Keep The Page Tight
+## Keep The Image Tight
 
-Do not render extra utility controls or discarded helper sections unless the user explicitly asks for them again.
+Do not render utility controls, share buttons, stale helper hints, or discarded helper sections.
 
 Keep the footer as a single small attribution line.

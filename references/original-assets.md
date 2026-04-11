@@ -39,6 +39,6 @@ Base repository:
 
 ## Attribution
 
-Always include this line inside the HTML page:
+Always include this line inside the final image:
 
 `友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test`

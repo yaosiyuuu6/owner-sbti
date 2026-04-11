@@ -21,6 +21,7 @@ Use this bundle from any local agent runtime that can:
 - read Markdown files
 - write JSON files
 - execute Python 3 scripts
+- send or display local image files when the runtime supports it
 
 This includes Codex, Claude Code, OpenClaw, and similar local coding agents.
 
@@ -34,8 +35,8 @@ Default behavior:
 2. Read `references/original-assets.md`, `references/relationship-types.md`, and `references/voice-guide.md`.
 3. Ask for the user-selected original SBTI type if missing, and do that before summarizing anything.
 4. Automatically inspect the agent's own accessible history, preferring all accessible same-user threads over only the current context window.
-5. Generate one local HTML result page.
-6. Return only `人格 + 描述 + 链接`.
+5. Generate one local PNG result image.
+6. Return only `人格 + 描述 + 图片`.
 
 The repository explanation is optional and secondary. It must not replace step 3.
 
@@ -55,42 +56,18 @@ The default local workflow is:
 python3 scripts/finalize_report.py --input /path/to/report.json
 ```
 
-That command validates the payload, renders the local files, and returns a public `https://...` link through the bundled default endpoint. If publish is unavailable, it falls back to the local HTML path.
+That command validates the payload, renders the final PNG, and prints the image path.
 
 The manual local workflow is:
 
 ```bash
 python3 scripts/validate_report_json.py --input /path/to/report.json
-python3 scripts/render_owner_sbti.py \
+python3 scripts/render_owner_sbti_image.py \
   --input /path/to/report.json \
-  --output-html /path/to/report.html \
-  --output-md /path/to/report.md
+  --output-png /path/to/report.png
 ```
 
-To return a phone-openable public URL instead of a local file path:
-
-```bash
-python3 scripts/publish_report.py \
-  --input /path/to/report.json \
-  --endpoint https://your-report-service.example.com
-```
-
-If the user wants a directly openable link instead of a file path, start a local preview server:
-
-```bash
-python3 scripts/serve_report.py --file /path/to/report.html --port 8765
-```
-
-Return the printed localhost URL.
-
-If the user specifically wants a link that works on mobile or on another device, do not use localhost. Publish the report JSON to a public endpoint and return the resulting `https://...` URL instead.
-
-The bundled endpoint is anonymous but guarded with:
-
-- IP-based rate limits
-- payload-size limits
-- automatic TTL expiration
-- strict payload validation
+If the runtime can attach or show local images directly, send the generated PNG to the user instead of only printing the path.
 
 ## Required Reasoning Rules
 
@@ -119,12 +96,12 @@ Do not summarize the repository before asking that question.
 After the user answers, inspect your own accessible history in this task and environment for evidence, starting with all accessible same-user threads rather than only the current context.
 If broader same-user thread history needs permission, ask for that permission first.
 Only ask for extra records if the accessible history is genuinely not enough.
-Generate one local HTML page from the bundled renderer, then return only:
+Generate one local PNG from the bundled renderer, then return only:
 人格：
 描述：
-链接：
+图片：
 
-Put attribution only inside the HTML page, not in the chat reply.
+Put attribution only inside the image, not in the chat reply.
 ```
 
 ## Portability Constraints
@@ -137,4 +114,4 @@ Do not rely on:
 - browser automation
 - Node.js packages
 
-The current bundle is intentionally Python-stdlib-only so it can be reused from different agent shells with minimal friction.
+The current bundle is intentionally Python-stdlib-first so it can be reused from different agent shells with minimal friction. The only external binary expected by the renderer is ImageMagick `magick`.

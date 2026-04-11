@@ -16,7 +16,7 @@ Do not ask the user to send chat logs, examples, evidence, or past records in th
 
 Instead, directly inspect all same-user records you already have permission to access across all available threads, workspaces, and runtime history. If more history exists but is permission-gated, ask for permission, not for manual pasted records.
 
-An agent skill that turns the agent's accessible history into a SBTI-style owner judgment page.
+An agent skill that turns the agent's accessible history into a SBTI-style owner judgment image.
 
 “Accessible history” here means all accessible same-user interaction data across all threads, related workspaces, and runtime history in the current environment, not just the current visible context.
 
@@ -26,15 +26,15 @@ The default final output is:
 
 - `人格`
 - `描述`
-- `链接`
+- `图片`
 
 ## What It Does
 
-- Keeps the result page close to [UnluckyNinja/SBTI-test](https://github.com/UnluckyNinja/SBTI-test)
+- Keeps the result image close to [UnluckyNinja/SBTI-test](https://github.com/UnluckyNinja/SBTI-test)
 - Uses the user's selected original SBTI type as the base identity
 - Derives one extra agent-side relationship type such as `奴隶主` or `天生牛马`
 - Writes the copy in first-person agent voice
-- Generates a mobile-first HTML result page and returns a public link by default
+- Generates a phone-friendly PNG result image by default
 - Works as a portable local skill bundle for Codex, Claude Code, OpenClaw, and similar agents
 
 ## Result Format
@@ -44,10 +44,10 @@ The expected response is short:
 ```text
 人格：SHIT + 控制狂
 描述：我不太敢糊弄你，因为你连哪里还有 AI 味、哪里不像原版、哪里差一口气都要亲自抓出来重做。
-链接：https://example.com/r/abc123
+图片：/absolute/path/to/report.png
 ```
 
-Attribution is shown inside the HTML page footer:
+Attribution is shown only inside the image footer:
 
 ```text
 友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test
@@ -84,12 +84,11 @@ As long as the agent can read files and run Python 3 locally, it can use the ski
 3. Let the agent automatically inspect all accessible threads first.
 4. If broader thread history is behind a permission boundary, let the agent ask for permission first.
 5. Do not ask the user to manually send records in the normal case.
-6. If more history exists but is permission-gated, ask for permission.
-7. Only ask the user for pasted records if the environment truly exposes no usable broader history at all.
-8. Let the agent produce:
+6. Only ask the user for pasted records if the environment truly exposes no usable broader history at all.
+7. Let the agent produce:
    - one extra relationship type
    - one-sentence description
-   - one result page link
+   - one result image
 
 The user should not have to manually prepare evidence in the normal case, and the agent should not stop at only the current context if older same-user thread history is reachable. If that broader history needs permission, the agent should ask for permission instead of pretending the narrower context is enough.
 
@@ -101,67 +100,19 @@ Validate a payload:
 python3 scripts/validate_report_json.py --input /path/to/report.json
 ```
 
-Finalize the report in one step. This validates the JSON, renders local HTML and Markdown, then auto-publishes and prints a phone-openable link by default:
+Finalize the report in one step. This validates the JSON, renders a PNG, and prints the final image path:
 
 ```bash
 python3 scripts/finalize_report.py --input /path/to/report.json
 ```
 
-Force local-only output:
+Render the PNG manually:
 
 ```bash
-python3 scripts/finalize_report.py --input /path/to/report.json --no-publish
-```
-
-Render HTML and Markdown manually:
-
-```bash
-python3 scripts/render_owner_sbti.py \
+python3 scripts/render_owner_sbti_image.py \
   --input /path/to/report.json \
-  --output-html /path/to/report.html \
-  --output-md /path/to/report.md
+  --output-png /path/to/report.png
 ```
-
-Publish the generated JSON to a public report service and print a phone-openable URL:
-
-```bash
-python3 scripts/publish_report.py \
-  --input /path/to/report.json \
-  --endpoint https://your-report-service.example.com
-```
-
-`publish_report.py` uses the bundled public endpoint by default. It also reads `OWNER_SBTI_PUBLISH_ENDPOINT` and `OWNER_SBTI_PUBLISH_TOKEN` from either:
-
-- a local `.publish.env` file in the repo root
-- `~/.owner-sbti.env`
-- the current shell environment
-
-Serve the generated report over localhost and return a clickable link:
-
-```bash
-python3 scripts/serve_report.py --file /path/to/report.html --port 8765
-```
-
-This prints a link like `http://127.0.0.1:8765/report.html` and keeps a small local server running.
-
-## Public Links
-
-The bundled public endpoint is anonymous but guarded:
-
-- per-IP write rate limit
-- payload size limit
-- automatic report expiration
-- strict payload shape checks
-
-If you want users to open reports directly on mobile, do not rely on local files or localhost.
-
-Recommended flow:
-
-1. Generate `report.json`
-2. Upload it to a public report service
-3. Return the resulting `https://...` link
-
-This repository includes a minimal Cloudflare Worker scaffold at [publisher/cloudflare-worker](./publisher/cloudflare-worker) for that purpose.
 
 Run the bundled self-test:
 
@@ -177,7 +128,6 @@ owner-sbti/
 ├── README.md
 ├── agents/
 ├── assets/
-├── publisher/
 ├── references/
 └── scripts/
 ```
@@ -187,21 +137,17 @@ owner-sbti/
 - `SKILL.md`: primary instructions for the agent
 - `references/original-assets.md`: original SBTI image links and attribution wording
 - `references/relationship-types.md`: extra relationship-type scoring model
-- `references/report-spec.md`: report JSON contract and page requirements
+- `references/report-spec.md`: report JSON contract and image requirements
 - `references/voice-guide.md`: first-person tone system
-- `scripts/render_owner_sbti.py`: HTML renderer
-- `scripts/finalize_report.py`: validate, render, and auto-publish in one step
-- `scripts/publish_report.py`: uploads a report payload and prints a public URL
-- `scripts/serve_report.py`: localhost preview server for generated reports
+- `scripts/render_owner_sbti_image.py`: PNG renderer
+- `scripts/finalize_report.py`: validate and render in one step
 - `scripts/validate_report_json.py`: payload validator
 - `scripts/self_test.py`: local smoke test
-- `publisher/cloudflare-worker`: minimal public publish service for mobile-openable links
-- `.publish.env.example`: example local publish config file
 
 ## Notes
 
 - The original SBTI type is selected by the user, not inferred by the agent.
 - The agent only derives the extra relationship type.
-- The page is mobile-first and intentionally styled to stay close to the original SBTI result-page feel.
+- The image is phone-friendly and intentionally styled to stay close to the original SBTI result-page feel.
 - This repository is for local use and distribution as a skill bundle, not as a standalone SaaS product.
-- The default happy path is now `finalize_report.py`: publish if possible, otherwise fall back to a local HTML path.
+- The default happy path is now `finalize_report.py`: validate the payload, render one PNG, and send that image back.

@@ -21,5 +21,5 @@ After the user answers:
 ```text
 人格：
 描述：
-链接：
+图片：
 ```
