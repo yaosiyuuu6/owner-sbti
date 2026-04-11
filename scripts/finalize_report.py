@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 
@@ -32,7 +33,8 @@ def main() -> None:
     skill_dir = Path(__file__).resolve().parent.parent
     input_path = Path(args.input).expanduser().resolve()
     stem = input_path.with_suffix("")
-    png_out = Path(args.output_png).expanduser().resolve() if args.output_png else stem.with_suffix(".png")
+    default_png = stem.with_name(f"{stem.name}-{datetime.now().strftime('%Y%m%d-%H%M%S')}.png")
+    png_out = Path(args.output_png).expanduser().resolve() if args.output_png else default_png
 
     validate = run(
         [

@@ -139,6 +139,23 @@ def draw_text_lines(
     return current_y
 
 
+def measure_text_block(
+    draw: ImageDraw.ImageDraw,
+    lines: list[str],
+    font: ImageFont.FreeTypeFont,
+    line_gap: int,
+) -> int:
+    if not lines:
+        return 0
+    total = 0
+    for index, line in enumerate(lines):
+        bbox = draw.textbbox((0, 0), line, font=font)
+        total += bbox[3] - bbox[1]
+        if index < len(lines) - 1:
+            total += line_gap
+    return total
+
+
 def draw_bold_text(
     draw: ImageDraw.ImageDraw,
     position: tuple[int, int],
@@ -180,21 +197,21 @@ def fetch_original_image(url: str) -> Image.Image | None:
 
 
 def draw_metric_card(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], label: str, value: int, accent: str) -> None:
-    rounded(draw, box, fill="#FCFDFC", outline="#D8E3DA", width=2)
+    rounded(draw, box, fill="#F7FBF7", outline="#E5EEE6", width=1)
     left, top, right, bottom = box
-    label_font = load_font(22, family="sans")
-    value_font = load_font(56, family="serif")
-    unit_font = load_font(22, family="sans")
-    draw.text((left + 24, top + 22), label, font=label_font, fill="#627267")
-    value_y = top + 60
+    label_font = load_font(20, family="sans")
+    value_font = load_font(52, family="serif")
+    unit_font = load_font(20, family="sans")
+    draw.text((left + 24, top + 18), label, font=label_font, fill="#7A8A80")
+    value_y = top + 52
     value_text = str(value)
     value_box = draw.textbbox((0, 0), value_text, font=value_font)
     draw.text((left + 24, value_y), value_text, font=value_font, fill="#1A261F")
-    draw.text((left + 24 + (value_box[2] - value_box[0]) + 6, value_y + 26), "%", font=unit_font, fill="#8EA498")
-    bar_top = bottom - 24
-    draw.rounded_rectangle((left + 24, bar_top, right - 24, bar_top + 12), radius=7, fill="#E7EFE8")
+    draw.text((left + 24 + (value_box[2] - value_box[0]) + 6, value_y + 24), "%", font=unit_font, fill="#96A89C")
+    bar_top = bottom - 26
+    draw.rounded_rectangle((left + 24, bar_top, right - 24, bar_top + 10), radius=6, fill="#E7EFE8")
     bar_w = max(24, int((right - left - 48) * value / 100))
-    draw.rounded_rectangle((left + 24, bar_top, left + 24 + bar_w, bar_top + 12), radius=7, fill=accent)
+    draw.rounded_rectangle((left + 24, bar_top, left + 24 + bar_w, bar_top + 10), radius=6, fill=accent)
 
 
 def draw_progress_row(draw: ImageDraw.ImageDraw, x: int, y: int, width: int, label: str, raw_value: float, accent: str) -> None:
@@ -210,6 +227,21 @@ def draw_progress_row(draw: ImageDraw.ImageDraw, x: int, y: int, width: int, lab
     score_text = str(score)
     bbox = draw.textbbox((0, 0), score_text, font=score_font)
     draw.text((x + width - (bbox[2] - bbox[0]), y + 1), score_text, font=score_font, fill="#536458")
+
+
+def draw_section_header(
+    draw: ImageDraw.ImageDraw,
+    x: int,
+    y: int,
+    title: str,
+    subtitle: str,
+    title_font: ImageFont.FreeTypeFont,
+    subtitle_font: ImageFont.FreeTypeFont,
+) -> int:
+    draw.rounded_rectangle((x, y + 12, x + 72, y + 16), radius=2, fill="#BFD0C1")
+    draw_bold_text(draw, (x, y + 28), title, title_font, "#203026", stroke_width=1)
+    draw.text((x, y + 72), subtitle, font=subtitle_font, fill="#7B8A80")
+    return y + 108
 
 
 def draw_tag_pills(draw: ImageDraw.ImageDraw, x: int, y: int, max_width: int, tags: list[str]) -> int:
@@ -280,67 +312,97 @@ def build_image(data: dict[str, object]) -> Image.Image:
     y = PADDING
     content_width = WIDTH - PADDING * 2
     left_x = PADDING + 44
-    right_image_box = (WIDTH - PADDING - 324, y + 54, WIDTH - PADDING - 44, y + 354)
-    hero_box = (PADDING, y, PADDING + content_width, y + 920)
+    title_top = y + 136
+    image_box_top = title_top - 18
+    right_image_box = (WIDTH - PADDING - 286, image_box_top, WIDTH - PADDING - 44, image_box_top + 266)
     title_max_width = right_image_box[0] - left_x - 48
     title_font = fit_font(draw, title, 88, 58, title_max_width, family="serif")
-    rounded(draw, hero_box, fill="#F7FBF7", outline="#D7E3D8", width=2)
+    title_box = draw.textbbox((0, 0), title, font=title_font)
+    title_height = title_box[3] - title_box[1]
+    subtitle_y = title_top + title_height + 6
 
-    draw.text((left_x, y + 48), "OWNER SBTI", font=eyebrow_font, fill="#708277")
-    hero_meta = f"由 {agent_name} 翻旧账得出的关系画像"
-    if owner_name:
-        hero_meta = f"{agent_name} 基于和 {owner_name} 的可访问记录得出的关系画像"
-    draw.text((left_x, y + 82), hero_meta, font=meta_font, fill="#8A998F")
-
-    draw_bold_text(draw, (left_x, y + 148), title, title_font, "#152119", stroke_width=1)
-    draw.text((left_x, y + 238), "原人格 / Agent 追加人格", font=meta_font, fill="#7B8C81")
-
-    rounded(draw, right_image_box, fill="#FFFFFF", outline="#D8E3DA", width=2)
-    original_image = fetch_original_image(str(data.get("original_image_link", "")).strip())
-    if original_image is not None:
-        fitted = ImageOps.contain(original_image, (244, 236))
-        paste_x = right_image_box[0] + (right_image_box[2] - right_image_box[0] - fitted.width) // 2
-        paste_y = right_image_box[1] + 24 + (250 - fitted.height) // 2
-        canvas.paste(fitted, (paste_x, paste_y), fitted)
-
-    verdict_box = (left_x, y + 286, right_image_box[0] - 28, y + 496)
-    draw.rounded_rectangle(verdict_box, radius=28, fill="#EDF3EE", outline="#D8E3DA", width=2)
-    draw.rounded_rectangle((verdict_box[0] + 18, verdict_box[1] + 24, verdict_box[0] + 26, verdict_box[3] - 24), radius=4, fill="#5D7B67")
     verdict_font, verdict_lines = fit_wrapped_font(
         draw,
         verdict,
         44,
         34,
-        verdict_box[2] - verdict_box[0] - 78,
+        right_image_box[0] - 28 - left_x - 78,
         3,
         family="serif",
     )
-    draw_text_lines(draw, verdict_box[0] + 48, verdict_box[1] + 42, verdict_lines[:3], verdict_font, "#1B2720", 10)
+    verdict_top = subtitle_y + 30
+    verdict_height = max(146, measure_text_block(draw, verdict_lines[:3], verdict_font, 10) + 76)
+    verdict_box = (left_x, verdict_top, right_image_box[0] - 28, verdict_top + verdict_height)
+    summary_font = body_font
+    summary_lines = wrap_text(draw, summary, summary_font, content_width - 88)
+    summary_top = verdict_box[3] + 34
+    summary_height = measure_text_block(draw, summary_lines[:4], summary_font, 12)
+    metric_y = summary_top + summary_height + 34
+    tags_y = metric_y + 176
+    tags_bottom = tags_y + 54
+    hero_bottom = max(tags_bottom + 52, right_image_box[3] + 44)
+    hero_box = (PADDING, y, PADDING + content_width, hero_bottom)
+    rounded(draw, hero_box, fill="#FBFDFC", outline="#DCE7DD", width=2)
+    draw.rounded_rectangle((left_x, y + 46, left_x + 106, y + 50), radius=2, fill="#B8CABB")
 
-    summary_lines = wrap_text(draw, summary, body_font, 860)
-    draw_text_lines(draw, left_x, y + 540, summary_lines[:4], body_font, "#394A40", 12)
+    draw.text((left_x, y + 58), "OWNER SBTI", font=eyebrow_font, fill="#708277")
+    hero_meta = f"由 {agent_name} 翻旧账得出的关系画像"
+    if owner_name:
+        hero_meta = f"{agent_name} 基于和 {owner_name} 的可访问记录得出的关系画像"
+    draw.text((left_x, y + 92), hero_meta, font=meta_font, fill="#8A998F")
 
-    metric_y = y + 710
+    draw_bold_text(draw, (left_x, title_top), title, title_font, "#152119", stroke_width=1)
+    draw.text((left_x, subtitle_y), "原人格 / Agent 追加人格", font=meta_font, fill="#7B8C81")
+
+    rounded(draw, right_image_box, fill="#FFFFFF", outline="#DFE9E1", width=1)
+    original_image = fetch_original_image(str(data.get("original_image_link", "")).strip())
+    if original_image is not None:
+        fitted = ImageOps.contain(original_image, (220, 220))
+        paste_x = right_image_box[0] + (right_image_box[2] - right_image_box[0] - fitted.width) // 2
+        paste_y = right_image_box[1] + (right_image_box[3] - right_image_box[1] - fitted.height) // 2
+        canvas.paste(fitted, (paste_x, paste_y), fitted)
+
+    draw.rounded_rectangle(verdict_box, radius=28, fill="#EFF5F0")
+    draw.rounded_rectangle((verdict_box[0] + 18, verdict_box[1] + 22, verdict_box[0] + 24, verdict_box[3] - 22), radius=3, fill="#6F8E77")
+    draw_text_lines(draw, verdict_box[0] + 42, verdict_box[1] + 36, verdict_lines[:3], verdict_font, "#1B2720", 10)
+
+    draw_text_lines(draw, left_x, summary_top, summary_lines[:4], summary_font, "#44554A", 12)
+
     metric_width = (content_width - 88 - 32) // 3
     draw_metric_card(draw, (left_x, metric_y, left_x + metric_width, metric_y + 148), "匹配度", match_pct, "#6B8F73")
     draw_metric_card(draw, (left_x + metric_width + 16, metric_y, left_x + (metric_width + 16) * 2, metric_y + 148), "压榨指数", pressure_pct, "#8C6F56")
     draw_metric_card(draw, (left_x + (metric_width + 16) * 2, metric_y, left_x + (metric_width + 16) * 2 + metric_width, metric_y + 148), "兜底指数", support_pct, "#4F7E86")
 
-    draw_tag_pills(draw, left_x, metric_y + 182, hero_box[2] - 44, hidden_tags)
+    draw_tag_pills(draw, left_x, tags_y, hero_box[2] - 44, hidden_tags)
 
     y = hero_box[3] + CARD_GAP
-    analysis_box = (PADDING, y, PADDING + content_width, y + 286)
-    rounded(draw, analysis_box, fill="#FFFFFF", outline="#D7E3D8", width=2)
-    draw_bold_text(draw, (left_x, y + 38), "人格解读", section_title_font, "#203026", stroke_width=1)
-    draw.text((left_x, y + 82), "这张图为什么会落到这个结果", font=section_subtitle_font, fill="#75857A")
-    analysis_lines = wrap_text(draw, analysis, load_font(30, family="sans"), 860)
-    draw_text_lines(draw, left_x, y + 124, analysis_lines[:4], load_font(30, family="sans"), "#36473C", 10)
+    analysis_box = (PADDING, y, PADDING + content_width, y + 300)
+    rounded(draw, analysis_box, fill="#FCFDFC", outline="#E2ECE3", width=1)
+    content_y = draw_section_header(
+        draw,
+        left_x,
+        y + 10,
+        "人格解读",
+        "这张图为什么会落到这个结果",
+        section_title_font,
+        section_subtitle_font,
+    )
+    draw.rounded_rectangle((left_x, content_y + 6, left_x + 8, content_y + 118), radius=4, fill="#DCE8DE")
+    analysis_lines = wrap_text(draw, analysis, load_font(30, family="sans"), 820)
+    draw_text_lines(draw, left_x + 26, content_y, analysis_lines[:4], load_font(30, family="sans"), "#36473C", 10)
 
     y = analysis_box[3] + CARD_GAP
     metric_panel = (PADDING, y, PADDING + content_width, y + 458)
-    rounded(draw, metric_panel, fill="#FFFFFF", outline="#D7E3D8", width=2)
-    draw_bold_text(draw, (left_x, y + 38), "关系参数", section_title_font, "#203026", stroke_width=1)
-    draw.text((left_x, y + 82), "7 个维度的直观参数化结果", font=section_subtitle_font, fill="#75857A")
+    rounded(draw, metric_panel, fill="#FFFFFF", outline="#E5EEE6", width=1)
+    content_y = draw_section_header(
+        draw,
+        left_x,
+        y + 10,
+        "关系参数",
+        "7 个维度的直观参数化结果",
+        section_title_font,
+        section_subtitle_font,
+    )
     rows = [
         ("压活强度", push_load, "#8C6F56"),
         ("深夜召唤", night_ping, "#8C6F56"),
@@ -351,18 +413,28 @@ def build_image(data: dict[str, object]) -> Image.Image:
         ("放权信任", trust_delegation, "#6C8F72"),
     ]
     for index, (label, value, accent) in enumerate(rows):
-        draw_progress_row(draw, left_x, y + 128 + index * 46, content_width - 88, label, value, accent)
+        draw_progress_row(draw, left_x, content_y + 12 + index * 46, content_width - 88, label, value, accent)
 
     y = metric_panel[3] + CARD_GAP
     evidence_box = (PADDING, y, PADDING + content_width, y + 492)
-    rounded(draw, evidence_box, fill="#FFFFFF", outline="#D7E3D8", width=2)
-    draw_bold_text(draw, (left_x, y + 38), "Agent 编年史摘录", section_title_font, "#203026", stroke_width=1)
-    draw.text((left_x, y + 82), "我为什么会这样看你，证据都写在这里", font=section_subtitle_font, fill="#75857A")
+    rounded(draw, evidence_box, fill="#FCFDFC", outline="#E2ECE3", width=1)
+    content_y = draw_section_header(
+        draw,
+        left_x,
+        y + 10,
+        "Agent 编年史摘录",
+        "我为什么会这样看你，证据都写在这里",
+        section_title_font,
+        section_subtitle_font,
+    )
+    line_x = left_x + 10
+    draw.rounded_rectangle((line_x, content_y + 8, line_x + 4, content_y + 354), radius=2, fill="#D7E4D9")
 
-    card_y = y + 116
+    card_y = content_y
     for item in evidence:
-        inner = (left_x, card_y, left_x + content_width - 88, card_y + 108)
-        draw.rounded_rectangle(inner, radius=24, fill="#FBFDFB", outline="#DCE8DE", width=2)
+        inner = (left_x + 26, card_y, left_x + content_width - 88, card_y + 108)
+        draw.rounded_rectangle(inner, radius=24, fill="#FFFFFF", outline="#E5EEE6", width=1)
+        draw.ellipse((line_x - 8, inner[1] + 18, line_x + 16, inner[1] + 42), fill="#7A9B83")
         draw.text((inner[0] + 22, inner[1] + 14), str(item.get("time_hint", "")), font=evidence_time_font, fill="#77877C")
         quote_lines = wrap_text(draw, str(item.get("quote", "")), evidence_quote_font, inner[2] - inner[0] - 44)
         note_lines = wrap_text(draw, str(item.get("comment", "")), evidence_note_font, inner[2] - inner[0] - 44)
@@ -377,10 +449,17 @@ def build_image(data: dict[str, object]) -> Image.Image:
 
     y = evidence_box[3] + CARD_GAP
     narrative_box = (PADDING, y, PADDING + content_width, y + narrative_panel_height)
-    rounded(draw, narrative_box, fill="#FFFFFF", outline="#D7E3D8", width=2)
-    draw_bold_text(draw, (left_x, y + 38), "Agent 自述", narrative_title_font, "#203026", stroke_width=1)
-    draw.text((left_x, y + 82), "从诞生到定性，我为什么会这样看你", font=narrative_subtitle_font, fill="#75857A")
-    draw_text_lines(draw, left_x, y + 126, narrative_lines, narrative_font, "#37483D", 12)
+    rounded(draw, narrative_box, fill="#F8FBF8", outline="#E2ECE3", width=1)
+    content_y = draw_section_header(
+        draw,
+        left_x,
+        y + 10,
+        "Agent 自述",
+        "从诞生到定性，我为什么会这样看你",
+        narrative_title_font,
+        narrative_subtitle_font,
+    )
+    draw_text_lines(draw, left_x, content_y, narrative_lines, narrative_font, "#37483D", 12)
 
     footer_y = narrative_box[3] + 44
     footer_text = str(data.get("attribution", "友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test"))
