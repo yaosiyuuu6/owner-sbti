@@ -36,7 +36,8 @@ Default behavior:
 3. Ask for the user-selected original SBTI type if missing, and do that before summarizing anything.
 4. Automatically inspect the agent's own accessible history, preferring all accessible same-user threads over only the current context window.
 5. Generate one local PNG result image.
-6. Return only `人格 + 描述 + 图片`.
+6. If a supported channel is configured, send the PNG directly to that chat.
+7. Otherwise return only `人格 + 描述 + 图片`.
 
 The repository explanation is optional and secondary. It must not replace step 3.
 
@@ -56,7 +57,7 @@ The default local workflow is:
 python3 scripts/finalize_report.py --input /path/to/report.json
 ```
 
-That command validates the payload, renders the final PNG, and prints the image path.
+That command validates the payload, renders the final PNG, then tries to deliver it to `lark`, `telegram`, or `whatsapp` if those channels are configured. If not, it prints the local image path.
 
 The manual local workflow is:
 

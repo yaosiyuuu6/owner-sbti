@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 from datetime import datetime
@@ -17,6 +18,13 @@ def parse_args() -> argparse.Namespace:
         "--output-png",
         help="Optional output PNG path. Defaults to <input>.png next to the JSON file.",
     )
+    parser.add_argument(
+        "--deliver",
+        choices=["auto", "none", "lark", "telegram", "whatsapp"],
+        default="auto",
+        help="Try to send the generated image through a supported channel, otherwise fall back to the local path.",
+    )
+    parser.add_argument("--target", help="Optional explicit delivery target for the selected channel.")
     return parser.parse_args()
 
 
@@ -32,6 +40,7 @@ def main() -> None:
     args = parse_args()
     skill_dir = Path(__file__).resolve().parent.parent
     input_path = Path(args.input).expanduser().resolve()
+    payload = json.loads(input_path.read_text(encoding="utf-8"))
     stem = input_path.with_suffix("")
     default_png = stem.with_name(f"{stem.name}-{datetime.now().strftime('%Y%m%d-%H%M%S')}.png")
     png_out = Path(args.output_png).expanduser().resolve() if args.output_png else default_png
@@ -61,6 +70,31 @@ def main() -> None:
         raise SystemExit(render.stderr.strip() or render.stdout.strip() or "Image render failed")
 
     print(png_out)
+
+    if args.deliver != "none":
+        caption_parts = [
+            str(payload.get("selected_original_type", "")).strip(),
+            str(payload.get("derived_secondary_type", "")).strip(),
+        ]
+        caption = " + ".join(part for part in caption_parts if part)
+        summary = str(payload.get("summary", "")).strip()
+        if summary:
+            caption = f"{caption}\n{summary}" if caption else summary
+        delivery = run(
+            [
+                py(),
+                str(skill_dir / "scripts" / "deliver_report.py"),
+                "--image",
+                str(png_out),
+                "--channel",
+                args.deliver,
+                "--caption",
+                caption,
+                *([] if not args.target else ["--target", args.target]),
+            ]
+        )
+        if delivery.stdout.strip():
+            print(delivery.stdout.strip())
 
 
 if __name__ == "__main__":

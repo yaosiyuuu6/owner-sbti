@@ -69,6 +69,21 @@ Expected flow:
 
 Use [PROMPT_TEMPLATE.md](./PROMPT_TEMPLATE.md) when the runtime does not automatically treat the repo as a skill.
 
+## Channel Delivery
+
+`finalize_report.py` will try to deliver the image automatically in this order:
+
+- `lark`
+- `telegram`
+- `whatsapp`
+- fallback to local image path
+
+Supported environment variables:
+
+- Lark: `OWNER_SBTI_LARK_CHAT_ID` or `OWNER_SBTI_LARK_USER_ID`
+- Telegram: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
+- WhatsApp: `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_TO`
+
 ## Local Render
 
 Requirements:
@@ -96,6 +111,7 @@ python3 scripts/finalize_report.py --input /path/to/report.json
 - `PROMPT_TEMPLATE.md`: fallback prompt
 - `references/`: scoring, voice, assets, and output contract
 - `scripts/`: validate and render the PNG poster
+- `scripts/deliver_report.py`: deliver the PNG to a supported IM channel
 
 ## Credits
 
