@@ -20,7 +20,7 @@ Use this bundle from any local agent runtime that can:
 
 - read Markdown files
 - write JSON files
-- execute Python 3 scripts
+- execute Python 3 scripts with Pillow installed
 - send or display local image files when the runtime supports it
 
 This includes Codex, Claude Code, OpenClaw, and similar local coding agents.
@@ -114,4 +114,4 @@ Do not rely on:
 - browser automation
 - Node.js packages
 
-The current bundle is intentionally Python-stdlib-first so it can be reused from different agent shells with minimal friction. The only external binary expected by the renderer is ImageMagick `magick`.
+The current bundle is intentionally lightweight so it can be reused from different agent shells with minimal friction. The only runtime dependency beyond Python 3 is Pillow.

@@ -9,6 +9,10 @@ import sys
 from pathlib import Path
 
 
+def py() -> str:
+    return sys.executable or "python3"
+
+
 def fail(message: str) -> None:
     print(f"[FAIL] {message}")
     raise SystemExit(1)
@@ -48,8 +52,8 @@ def main() -> None:
         "derived_secondary_type",
         "verdict",
         "summary",
-        "share_caption",
         "top_evidence",
+        "narrative",
     ]:
         if key not in data:
             fail(f"Sample payload is missing key: {key}")
@@ -61,7 +65,7 @@ def main() -> None:
     png_out = skill_dir / "assets" / "example-report.png"
 
     validate_result = subprocess.run(
-        [sys.executable, str(validate_script), "--input", str(sample)],
+        [py(), str(validate_script), "--input", str(sample)],
         capture_output=True,
         text=True,
     )
@@ -71,7 +75,7 @@ def main() -> None:
 
     render_result = subprocess.run(
         [
-            sys.executable,
+            py(),
             str(render_script),
             "--input",
             str(sample),
@@ -87,7 +91,7 @@ def main() -> None:
 
     finalize_result = subprocess.run(
         [
-            sys.executable,
+            py(),
             str(finalize_script),
             "--input",
             str(sample),

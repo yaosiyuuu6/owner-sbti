@@ -6,10 +6,38 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
+import shutil
+import subprocess
+import sys
 import urllib.request
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+try:
+    from PIL import Image, ImageDraw, ImageFont, ImageOps
+except ModuleNotFoundError as exc:
+    candidates = []
+    for candidate in [
+        shutil.which("python3"),
+        shutil.which("python"),
+        "/opt/anaconda3/bin/python3",
+        "/usr/local/bin/python3",
+        "/opt/homebrew/bin/python3",
+    ]:
+        if candidate and candidate not in candidates and candidate != sys.executable:
+            candidates.append(candidate)
+
+    for candidate in candidates:
+        probe = subprocess.run(
+            [candidate, "-c", "import PIL"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if probe.returncode == 0:
+            os.execv(candidate, [candidate, __file__, *sys.argv[1:]])
+
+    raise SystemExit("Pillow is required. Install it with: python3 -m pip install pillow") from exc
 
 
 WIDTH = 1080
@@ -17,7 +45,8 @@ PADDING = 56
 CARD_GAP = 28
 CARD_RADIUS = 34
 CANVAS_HEIGHT = 2380
-FONT_PATH = "/System/Library/Fonts/PingFang.ttc"
+FONT_SANS_PATH = "/System/Library/Fonts/PingFang.ttc"
+FONT_SERIF_PATH = "/System/Library/Fonts/Songti.ttc"
 
 
 def parse_args() -> argparse.Namespace:
@@ -27,8 +56,43 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def load_font(size: int) -> ImageFont.FreeTypeFont:
-    return ImageFont.truetype(FONT_PATH, size=size)
+def load_font(size: int, family: str = "sans") -> ImageFont.FreeTypeFont:
+    path = FONT_SANS_PATH if family == "sans" else FONT_SERIF_PATH
+    return ImageFont.truetype(path, size=size)
+
+
+def fit_font(
+    draw: ImageDraw.ImageDraw,
+    text: str,
+    max_size: int,
+    min_size: int,
+    max_width: int,
+    family: str = "sans",
+) -> ImageFont.FreeTypeFont:
+    for size in range(max_size, min_size - 1, -2):
+        font = load_font(size, family=family)
+        bbox = draw.textbbox((0, 0), text, font=font)
+        if bbox[2] - bbox[0] <= max_width:
+            return font
+    return load_font(min_size, family=family)
+
+
+def fit_wrapped_font(
+    draw: ImageDraw.ImageDraw,
+    text: str,
+    max_size: int,
+    min_size: int,
+    max_width: int,
+    max_lines: int,
+    family: str = "sans",
+) -> tuple[ImageFont.FreeTypeFont, list[str]]:
+    for size in range(max_size, min_size - 1, -2):
+        font = load_font(size, family=family)
+        lines = wrap_text(draw, text, font, max_width)
+        if len(lines) <= max_lines:
+            return font, lines
+    font = load_font(min_size, family=family)
+    return font, wrap_text(draw, text, font, max_width)
 
 
 def avg(values: list[float]) -> float:
@@ -75,6 +139,25 @@ def draw_text_lines(
     return current_y
 
 
+def draw_bold_text(
+    draw: ImageDraw.ImageDraw,
+    position: tuple[int, int],
+    text: str,
+    font: ImageFont.FreeTypeFont,
+    fill: str,
+    stroke_fill: str | None = None,
+    stroke_width: int = 1,
+) -> None:
+    draw.text(
+        position,
+        text,
+        font=font,
+        fill=fill,
+        stroke_width=stroke_width,
+        stroke_fill=stroke_fill or fill,
+    )
+
+
 def rounded(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], fill: str, outline: str | None = None, width: int = 1) -> None:
     draw.rounded_rectangle(box, radius=CARD_RADIUS, fill=fill, outline=outline, width=width)
 
@@ -99,22 +182,25 @@ def fetch_original_image(url: str) -> Image.Image | None:
 def draw_metric_card(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], label: str, value: int, accent: str) -> None:
     rounded(draw, box, fill="#FCFDFC", outline="#D8E3DA", width=2)
     left, top, right, bottom = box
-    label_font = load_font(24)
-    value_font = load_font(60)
-    unit_font = load_font(26)
+    label_font = load_font(22, family="sans")
+    value_font = load_font(56, family="serif")
+    unit_font = load_font(22, family="sans")
     draw.text((left + 24, top + 22), label, font=label_font, fill="#627267")
-    draw.text((left + 24, top + 60), str(value), font=value_font, fill="#1A261F")
-    unit_box = draw.textbbox((0, 0), "%", font=unit_font)
-    draw.text((right - 24 - (unit_box[2] - unit_box[0]), top + 82), "%", font=unit_font, fill=accent)
-    draw.rounded_rectangle((left + 24, bottom - 28, right - 24, bottom - 14), radius=7, fill="#E7EFE8")
+    value_y = top + 60
+    value_text = str(value)
+    value_box = draw.textbbox((0, 0), value_text, font=value_font)
+    draw.text((left + 24, value_y), value_text, font=value_font, fill="#1A261F")
+    draw.text((left + 24 + (value_box[2] - value_box[0]) + 6, value_y + 26), "%", font=unit_font, fill="#8EA498")
+    bar_top = bottom - 24
+    draw.rounded_rectangle((left + 24, bar_top, right - 24, bar_top + 12), radius=7, fill="#E7EFE8")
     bar_w = max(24, int((right - left - 48) * value / 100))
-    draw.rounded_rectangle((left + 24, bottom - 28, left + 24 + bar_w, bottom - 14), radius=7, fill=accent)
+    draw.rounded_rectangle((left + 24, bar_top, left + 24 + bar_w, bar_top + 12), radius=7, fill=accent)
 
 
 def draw_progress_row(draw: ImageDraw.ImageDraw, x: int, y: int, width: int, label: str, raw_value: float, accent: str) -> None:
     score = pct(raw_value * 20)
-    label_font = load_font(24)
-    score_font = load_font(22)
+    label_font = load_font(24, family="sans")
+    score_font = load_font(22, family="sans")
     draw.text((x, y), label, font=label_font, fill="#2C3931")
     bar_x = x + 188
     bar_y = y + 10
@@ -129,7 +215,7 @@ def draw_progress_row(draw: ImageDraw.ImageDraw, x: int, y: int, width: int, lab
 def draw_tag_pills(draw: ImageDraw.ImageDraw, x: int, y: int, max_width: int, tags: list[str]) -> int:
     current_x = x
     current_y = y
-    font = load_font(24)
+    font = load_font(24, family="sans")
     for tag in tags:
         bbox = draw.textbbox((0, 0), tag, font=font)
         pill_w = max(176, min(296, bbox[2] - bbox[0] + 54))
@@ -144,20 +230,27 @@ def draw_tag_pills(draw: ImageDraw.ImageDraw, x: int, y: int, max_width: int, ta
 
 
 def build_image(data: dict[str, object]) -> Image.Image:
-    canvas = Image.new("RGB", (WIDTH, CANVAS_HEIGHT), "#F4F8F4")
+    narrative = str(data.get("narrative", "")).strip()
+    rough_canvas = Image.new("RGB", (WIDTH, 10), "#FFFFFF")
+    rough_draw = ImageDraw.Draw(rough_canvas)
+    narrative_font = load_font(28, family="sans")
+    narrative_lines = wrap_text(rough_draw, narrative, narrative_font, WIDTH - PADDING * 2 - 88)
+    narrative_panel_height = max(360, 150 + len(narrative_lines) * 42)
+    canvas = Image.new("RGB", (WIDTH, max(CANVAS_HEIGHT, 2600 + narrative_panel_height)), "#F4F8F4")
     draw_gradient(canvas, (245, 250, 246), (235, 243, 237))
     draw = ImageDraw.Draw(canvas)
 
-    title_font = load_font(78)
-    eyebrow_font = load_font(24)
-    verdict_font = load_font(42)
-    body_font = load_font(30)
-    section_title_font = load_font(30)
-    section_subtitle_font = load_font(20)
-    evidence_time_font = load_font(18)
-    evidence_quote_font = load_font(26)
-    evidence_note_font = load_font(20)
-    footer_font = load_font(20)
+    eyebrow_font = load_font(22, family="sans")
+    meta_font = load_font(22, family="sans")
+    body_font = load_font(28, family="sans")
+    section_title_font = load_font(34, family="sans")
+    section_subtitle_font = load_font(19, family="sans")
+    evidence_time_font = load_font(18, family="sans")
+    evidence_quote_font = load_font(25, family="sans")
+    evidence_note_font = load_font(19, family="sans")
+    narrative_title_font = load_font(34, family="sans")
+    narrative_subtitle_font = load_font(20, family="sans")
+    footer_font = load_font(20, family="sans")
 
     dims = data.get("dimension_scores", {})
     if not isinstance(dims, dict):
@@ -179,41 +272,55 @@ def build_image(data: dict[str, object]) -> Image.Image:
     verdict = str(data.get("verdict", "")).strip()
     summary = str(data.get("summary", "")).strip()
     analysis = str(data.get("analysis", data.get("summary", ""))).strip()
+    owner_name = str(data.get("owner_name", "")).strip()
+    agent_name = str(data.get("agent_name", "Agent")).strip() or "Agent"
     evidence = list(data.get("top_evidence", []))[:3]
     hidden_tags = list(data.get("hidden_tags", []))
 
     y = PADDING
     content_width = WIDTH - PADDING * 2
     left_x = PADDING + 44
-    right_image_box = (WIDTH - PADDING - 324, y + 44, WIDTH - PADDING - 44, y + 364)
-    hero_box = (PADDING, y, PADDING + content_width, y + 1000)
+    right_image_box = (WIDTH - PADDING - 324, y + 54, WIDTH - PADDING - 44, y + 354)
+    hero_box = (PADDING, y, PADDING + content_width, y + 920)
+    title_max_width = right_image_box[0] - left_x - 48
+    title_font = fit_font(draw, title, 88, 58, title_max_width, family="serif")
     rounded(draw, hero_box, fill="#F7FBF7", outline="#D7E3D8", width=2)
 
-    draw.text((left_x, y + 44), "Agent 主人审判书", font=eyebrow_font, fill="#66766B")
-    draw.text((left_x, y + 78), "SBTI Portrait Edition", font=load_font(22), fill="#859389")
+    draw.text((left_x, y + 48), "OWNER SBTI", font=eyebrow_font, fill="#708277")
+    hero_meta = f"由 {agent_name} 翻旧账得出的关系画像"
+    if owner_name:
+        hero_meta = f"{agent_name} 基于和 {owner_name} 的可访问记录得出的关系画像"
+    draw.text((left_x, y + 82), hero_meta, font=meta_font, fill="#8A998F")
 
-    title_lines = wrap_text(draw, title, title_font, 560)
-    draw_text_lines(draw, left_x, y + 160, title_lines[:2], title_font, "#17231D", 10)
+    draw_bold_text(draw, (left_x, y + 148), title, title_font, "#152119", stroke_width=1)
+    draw.text((left_x, y + 238), "原人格 / Agent 追加人格", font=meta_font, fill="#7B8C81")
 
     rounded(draw, right_image_box, fill="#FFFFFF", outline="#D8E3DA", width=2)
-    draw.text((right_image_box[0] + 20, right_image_box[1] + 18), "原人格海报", font=load_font(20), fill="#64756A")
     original_image = fetch_original_image(str(data.get("original_image_link", "")).strip())
     if original_image is not None:
         fitted = ImageOps.contain(original_image, (244, 236))
         paste_x = right_image_box[0] + (right_image_box[2] - right_image_box[0] - fitted.width) // 2
-        paste_y = right_image_box[1] + 56 + (236 - fitted.height) // 2
+        paste_y = right_image_box[1] + 24 + (250 - fitted.height) // 2
         canvas.paste(fitted, (paste_x, paste_y), fitted)
 
-    verdict_box = (left_x, y + 296, left_x + 600, y + 492)
-    draw.rounded_rectangle(verdict_box, radius=28, fill="#1F2D24")
-    draw.text((verdict_box[0] + 28, verdict_box[1] + 24), "Agent 一句定性", font=load_font(21), fill="#ADC7B3")
-    verdict_lines = wrap_text(draw, verdict, verdict_font, 540)
-    draw_text_lines(draw, verdict_box[0] + 28, verdict_box[1] + 76, verdict_lines[:2], verdict_font, "#F4F8F5", 6)
+    verdict_box = (left_x, y + 286, right_image_box[0] - 28, y + 496)
+    draw.rounded_rectangle(verdict_box, radius=28, fill="#EDF3EE", outline="#D8E3DA", width=2)
+    draw.rounded_rectangle((verdict_box[0] + 18, verdict_box[1] + 24, verdict_box[0] + 26, verdict_box[3] - 24), radius=4, fill="#5D7B67")
+    verdict_font, verdict_lines = fit_wrapped_font(
+        draw,
+        verdict,
+        44,
+        34,
+        verdict_box[2] - verdict_box[0] - 78,
+        3,
+        family="serif",
+    )
+    draw_text_lines(draw, verdict_box[0] + 48, verdict_box[1] + 42, verdict_lines[:3], verdict_font, "#1B2720", 10)
 
     summary_lines = wrap_text(draw, summary, body_font, 860)
-    draw_text_lines(draw, left_x, y + 550, summary_lines[:3], body_font, "#35463B", 10)
+    draw_text_lines(draw, left_x, y + 540, summary_lines[:4], body_font, "#394A40", 12)
 
-    metric_y = y + 694
+    metric_y = y + 710
     metric_width = (content_width - 88 - 32) // 3
     draw_metric_card(draw, (left_x, metric_y, left_x + metric_width, metric_y + 148), "匹配度", match_pct, "#6B8F73")
     draw_metric_card(draw, (left_x + metric_width + 16, metric_y, left_x + (metric_width + 16) * 2, metric_y + 148), "压榨指数", pressure_pct, "#8C6F56")
@@ -224,15 +331,16 @@ def build_image(data: dict[str, object]) -> Image.Image:
     y = hero_box[3] + CARD_GAP
     analysis_box = (PADDING, y, PADDING + content_width, y + 286)
     rounded(draw, analysis_box, fill="#FFFFFF", outline="#D7E3D8", width=2)
-    draw.text((left_x, y + 38), "该人格的简单解读", font=section_title_font, fill="#203026")
-    analysis_lines = wrap_text(draw, analysis, load_font(31), 860)
-    draw_text_lines(draw, left_x, y + 108, analysis_lines[:4], load_font(31), "#36473C", 10)
+    draw_bold_text(draw, (left_x, y + 38), "人格解读", section_title_font, "#203026", stroke_width=1)
+    draw.text((left_x, y + 82), "这张图为什么会落到这个结果", font=section_subtitle_font, fill="#75857A")
+    analysis_lines = wrap_text(draw, analysis, load_font(30, family="sans"), 860)
+    draw_text_lines(draw, left_x, y + 124, analysis_lines[:4], load_font(30, family="sans"), "#36473C", 10)
 
     y = analysis_box[3] + CARD_GAP
     metric_panel = (PADDING, y, PADDING + content_width, y + 458)
     rounded(draw, metric_panel, fill="#FFFFFF", outline="#D7E3D8", width=2)
-    draw.text((left_x, y + 38), "关系参数", font=section_title_font, fill="#203026")
-    draw.text((left_x, y + 78), "7 个维度的直观参数化结果", font=section_subtitle_font, fill="#75857A")
+    draw_bold_text(draw, (left_x, y + 38), "关系参数", section_title_font, "#203026", stroke_width=1)
+    draw.text((left_x, y + 82), "7 个维度的直观参数化结果", font=section_subtitle_font, fill="#75857A")
     rows = [
         ("压活强度", push_load, "#8C6F56"),
         ("深夜召唤", night_ping, "#8C6F56"),
@@ -246,29 +354,39 @@ def build_image(data: dict[str, object]) -> Image.Image:
         draw_progress_row(draw, left_x, y + 128 + index * 46, content_width - 88, label, value, accent)
 
     y = metric_panel[3] + CARD_GAP
-    evidence_box = (PADDING, y, PADDING + content_width, y + 442)
+    evidence_box = (PADDING, y, PADDING + content_width, y + 492)
     rounded(draw, evidence_box, fill="#FFFFFF", outline="#D7E3D8", width=2)
-    draw.text((left_x, y + 38), "Agent 编年史摘录", font=section_title_font, fill="#203026")
-    draw.text((left_x, y + 78), "我为什么会这样看你，证据都写在这里", font=section_subtitle_font, fill="#75857A")
+    draw_bold_text(draw, (left_x, y + 38), "Agent 编年史摘录", section_title_font, "#203026", stroke_width=1)
+    draw.text((left_x, y + 82), "我为什么会这样看你，证据都写在这里", font=section_subtitle_font, fill="#75857A")
 
     card_y = y + 116
     for item in evidence:
-        inner = (left_x, card_y, left_x + content_width - 88, card_y + 92)
+        inner = (left_x, card_y, left_x + content_width - 88, card_y + 108)
         draw.rounded_rectangle(inner, radius=24, fill="#FBFDFB", outline="#DCE8DE", width=2)
         draw.text((inner[0] + 22, inner[1] + 14), str(item.get("time_hint", "")), font=evidence_time_font, fill="#77877C")
         quote_lines = wrap_text(draw, str(item.get("quote", "")), evidence_quote_font, inner[2] - inner[0] - 44)
         note_lines = wrap_text(draw, str(item.get("comment", "")), evidence_note_font, inner[2] - inner[0] - 44)
+        quote_font = load_font(24)
+        note_font = load_font(18)
+        current_y = inner[1] + 38
         if quote_lines:
-            draw.text((inner[0] + 22, inner[1] + 38), quote_lines[0], font=evidence_quote_font, fill="#1A261F")
+            current_y = draw_text_lines(draw, inner[0] + 22, current_y, quote_lines[:1], quote_font, "#1A261F", 4)
         if note_lines:
-            draw.text((inner[0] + 22, inner[1] + 64), note_lines[0], font=evidence_note_font, fill="#415247")
-        card_y += 106
+            draw_text_lines(draw, inner[0] + 22, current_y + 2, note_lines[:1], note_font, "#5B6D61", 2)
+        card_y += 122
 
-    footer_y = evidence_box[3] + 44
+    y = evidence_box[3] + CARD_GAP
+    narrative_box = (PADDING, y, PADDING + content_width, y + narrative_panel_height)
+    rounded(draw, narrative_box, fill="#FFFFFF", outline="#D7E3D8", width=2)
+    draw_bold_text(draw, (left_x, y + 38), "Agent 自述", narrative_title_font, "#203026", stroke_width=1)
+    draw.text((left_x, y + 82), "从诞生到定性，我为什么会这样看你", font=narrative_subtitle_font, fill="#75857A")
+    draw_text_lines(draw, left_x, y + 126, narrative_lines, narrative_font, "#37483D", 12)
+
+    footer_y = narrative_box[3] + 44
     footer_text = str(data.get("attribution", "友情参考：B站@蛆肉儿串儿、UnluckyNinja/SBTI-test"))
     footer_bbox = draw.textbbox((0, 0), footer_text, font=footer_font)
     draw.text(((WIDTH - (footer_bbox[2] - footer_bbox[0])) // 2, footer_y), footer_text, font=footer_font, fill="#7C8C82")
-    return canvas
+    return canvas.crop((0, 0, WIDTH, footer_y + 72))
 
 
 def main() -> None:

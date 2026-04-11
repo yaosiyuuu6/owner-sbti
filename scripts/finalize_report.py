@@ -23,6 +23,10 @@ def run(command: list[str]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(command, capture_output=True, text=True, check=False)
 
 
+def py() -> str:
+    return sys.executable or "python3"
+
+
 def main() -> None:
     args = parse_args()
     skill_dir = Path(__file__).resolve().parent.parent
@@ -32,7 +36,7 @@ def main() -> None:
 
     validate = run(
         [
-            sys.executable,
+            py(),
             str(skill_dir / "scripts" / "validate_report_json.py"),
             "--input",
             str(input_path),
@@ -43,7 +47,7 @@ def main() -> None:
 
     render = run(
         [
-            sys.executable,
+            py(),
             str(skill_dir / "scripts" / "render_owner_sbti_image.py"),
             "--input",
             str(input_path),

@@ -75,13 +75,13 @@ An agent can use this repository directly by opening:
 - `references/`
 - `scripts/`
 
-As long as the agent can read files and run Python 3 locally, it can use the skill without extra setup.
+As long as the agent can read files and run Python 3 with Pillow locally, it can use the skill without extra hosted setup.
 
 ## Required Flow
 
 1. Give the agent this skill folder or GitHub directory link.
-2. Tell it your original SBTI type.
-3. Let the agent automatically inspect all accessible threads first.
+2. The agent should first ask for your original SBTI type if you did not already provide it.
+3. Let the agent automatically inspect all accessible same-user threads first.
 4. If broader thread history is behind a permission boundary, let the agent ask for permission first.
 5. Do not ask the user to manually send records in the normal case.
 6. Only ask the user for pasted records if the environment truly exposes no usable broader history at all.
@@ -112,6 +112,12 @@ Render the PNG manually:
 python3 scripts/render_owner_sbti_image.py \
   --input /path/to/report.json \
   --output-png /path/to/report.png
+```
+
+Install Pillow if it is missing:
+
+```bash
+python3 -m pip install pillow
 ```
 
 Run the bundled self-test:

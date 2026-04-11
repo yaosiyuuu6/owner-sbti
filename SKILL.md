@@ -1,6 +1,6 @@
 ---
 name: owner-sbti
-description: Evaluate an owner or manager from the agent's accessible history and generate a humorous first-person SBTI-style judgment with a user-selected original type, an agent-derived secondary type, and a concise result in the format “人格 + 一句话描述 + 图片”. Use when Codex or another local coding agent needs to turn its own accessible chat history, notes, task traces, or work artifacts into a SBTI-like image result that closely follows the tone and presentation rhythm of UnluckyNinja/SBTI-test while adding one extra agent-derived personality.
+description: Ask the user for their original SBTI type first, then automatically inspect all same-user accessible records and generate one first-person SBTI-style image report in the format “人格 + 一句话描述 + 图片”.
 ---
 
 # Owner Sbti
@@ -28,7 +28,7 @@ Keep the flow fixed:
 4. Write the report in first person with a clear style mode.
 5. Output `人格 + 一句话描述 + 图片`, with the original人格图嵌进最终 PNG 结果图。
 
-This skill is designed to run locally on a clean machine with only Python 3 available. Do not assume third-party Python packages, browser automation, or hosted services are present.
+This skill is designed to run locally with Python 3 and Pillow available. Do not assume browser automation, hosted services, or remote APIs are present.
 
 Treat the bundle as portable across agent runtimes. Codex can discover it as a native skill, but Claude Code, OpenClaw, or any other local coding agent can use the same files directly from a GitHub link by reading this `SKILL.md` and the bundled references. The agent should be able to create one local PNG result image and send that image back without any extra manual setup from the user.
 
@@ -39,7 +39,7 @@ Collect or infer these inputs before writing:
 - `owner_name`: Name or nickname for the person being judged.
 - `agent_name`: Name or persona of the speaking agent.
 - `selected_original_type`: User-selected original SBTI type. Do not guess it.
-- `materials`: Optional extra materials, only if the built-in accessible history is genuinely insufficient.
+- `materials`: Optional extra materials, only if the built-in accessible history is genuinely insufficient after checking all accessible same-user records.
 
 If `selected_original_type` is missing, ask for it. Do not infer the original SBTI type from evidence.
 
@@ -211,7 +211,7 @@ Before finishing, verify:
 ### scripts/
 
 - [scripts/finalize_report.py](./scripts/finalize_report.py): Validate and render a report JSON payload into a final PNG image, then print the image path.
-- [scripts/render_owner_sbti_image.py](./scripts/render_owner_sbti_image.py): Render a report JSON file into a shareable PNG poster and optional SVG debug file.
+- [scripts/render_owner_sbti_image.py](./scripts/render_owner_sbti_image.py): Render a report JSON file into a shareable PNG poster.
 - [scripts/self_test.py](./scripts/self_test.py): Run a dependency-free local self-check and regenerate the bundled sample outputs.
 - [scripts/validate_report_json.py](./scripts/validate_report_json.py): Validate that an agent-generated report JSON matches the expected portable schema.
 

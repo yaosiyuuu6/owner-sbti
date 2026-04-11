@@ -17,7 +17,6 @@ REQUIRED_ROOT_KEYS = {
     "style_mode": str,
     "verdict": str,
     "summary": str,
-    "share_caption": str,
     "hidden_tags": list,
     "dimension_scores": dict,
     "top_evidence": list,
