@@ -2,7 +2,7 @@
 
 Turn an agent's accessible same-user history into a SBTI-style owner judgment poster.
 
-![example](./assets/example-report.png){ width=400px }
+<img src="./assets/example-report.png" alt="owner-sbti example" width="360" />
 
 Output:
 
