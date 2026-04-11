@@ -9,4 +9,3 @@ preview_id = "REPLACE_WITH_YOUR_PREVIEW_KV_NAMESPACE_ID"
 
 [vars]
 SITE_ORIGIN = "https://example.com"
-

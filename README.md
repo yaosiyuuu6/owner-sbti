@@ -100,6 +100,12 @@ python3 scripts/publish_report.py \
   --endpoint https://your-report-service.example.com
 ```
 
+`publish_report.py` also reads `OWNER_SBTI_PUBLISH_ENDPOINT` and `OWNER_SBTI_PUBLISH_TOKEN` from either:
+
+- a local `.publish.env` file in the repo root
+- `~/.owner-sbti.env`
+- the current shell environment
+
 Serve the generated report over localhost and return a clickable link:
 
 ```bash
@@ -152,6 +158,7 @@ owner-sbti/
 - `scripts/validate_report_json.py`: payload validator
 - `scripts/self_test.py`: local smoke test
 - `publisher/cloudflare-worker`: minimal public publish service for mobile-openable links
+- `.publish.env.example`: example local publish config file
 
 ## Notes
 

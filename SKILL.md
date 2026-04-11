@@ -152,6 +152,8 @@ If the user wants a phone-openable link, prefer public publish mode over localho
 
 The recommended publish target is the bundled Cloudflare Worker scaffold in [publisher/cloudflare-worker](./publisher/cloudflare-worker), but any service that accepts the report JSON and returns a public URL is acceptable.
 
+`publish_report.py` can read `OWNER_SBTI_PUBLISH_ENDPOINT` and `OWNER_SBTI_PUBLISH_TOKEN` from a local `.publish.env` file in the skill root, from `~/.owner-sbti.env`, or from the shell environment. Prefer that over hardcoding secrets into the repository.
+
 If HTML is requested, pass it a JSON file that follows [references/report-spec.md](./references/report-spec.md). The renderer outputs:
 
 - mobile-first HTML
