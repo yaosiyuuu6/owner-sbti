@@ -79,6 +79,20 @@ function tags(items = []) {
     .join("");
 }
 
+function featuredTags(items = []) {
+  return items
+    .slice(0, 3)
+    .map(
+      (tag, index) => `
+        <article class="featured-tag featured-tag-${index + 1}">
+          <div class="featured-tag-kicker">Agent盖章 ${String(index + 1).padStart(2, "0")}</div>
+          <div class="featured-tag-name">${escapeHtml(tag)}</div>
+        </article>
+      `
+    )
+    .join("");
+}
+
 function renderPage(report) {
   const title = `${report.selected_original_type || ""} + ${report.derived_secondary_type || ""}`;
   const summary = escapeHtml(report.summary || "");
@@ -157,6 +171,38 @@ function renderPage(report) {
     }
     .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
     .tag { display: inline-flex; padding: 8px 12px; border-radius: 999px; background: var(--soft); border: 1px solid var(--line); font-size: 13px; font-weight: 700; }
+    .featured-tags { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+    .featured-tag {
+      padding: 14px 12px 12px; border-radius: 18px; border: 1px solid rgba(77, 106, 83, 0.12);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), rgba(255,255,255,0.45) 55%),
+        linear-gradient(135deg, rgba(112, 151, 120, 0.18), rgba(230, 242, 232, 0.95));
+      box-shadow: 0 10px 24px rgba(77, 106, 83, 0.08);
+      min-height: 94px; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .featured-tag-kicker { font-size: 11px; letter-spacing: .08em; color: rgba(77, 106, 83, 0.72); text-transform: uppercase; font-weight: 700; }
+    .featured-tag-name { margin-top: 10px; font-size: clamp(18px, 4.6vw, 24px); line-height: 1.1; font-weight: 900; color: #203127; word-break: break-all; }
+    .featured-tag-1 {
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), rgba(255,255,255,0.4) 55%),
+        linear-gradient(135deg, rgba(247, 222, 184, 0.9), rgba(255, 245, 226, 0.95));
+    }
+    .featured-tag-2 {
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), rgba(255,255,255,0.4) 55%),
+        linear-gradient(135deg, rgba(206, 233, 216, 0.92), rgba(240, 250, 244, 0.95));
+    }
+    .featured-tag-3 {
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), rgba(255,255,255,0.4) 55%),
+        linear-gradient(135deg, rgba(218, 227, 245, 0.92), rgba(244, 247, 255, 0.95));
+    }
+    .summary-box {
+      margin-top: 18px; padding: 16px 16px 18px; border-radius: 18px;
+      background: linear-gradient(180deg, #f7fbf8, #eef6f0); border: 1px solid var(--line);
+    }
+    .summary-kicker { font-size: 12px; letter-spacing: .08em; color: var(--accent-strong); margin-bottom: 8px; font-weight: 800; }
+    .summary-box p { margin: 0; color: #24352a; font-size: 18px; line-height: 1.65; font-weight: 700; }
     .analysis-box h3, .dim-box h3, .chronicle-box h3 { font-size: 16px; margin-bottom: 12px; }
     .analysis-box p { color: #304034; font-size: 15px; line-height: 1.9; white-space: pre-wrap; }
     .dim-list, .receipt-grid { display: grid; gap: 12px; }
@@ -171,7 +217,12 @@ function renderPage(report) {
     .evidence-time, .evidence-meta { color: var(--muted); font-size: 12px; }
     blockquote { margin: 10px 0 8px; font-size: 16px; line-height: 1.7; font-weight: 700; }
     .footer-note { color: var(--muted); font-size: 12px; text-align: center; padding-top: 6px; }
-    @media (max-width: 560px) { .result-top { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) {
+      .result-top { grid-template-columns: 1fr; }
+      .featured-tags { grid-template-columns: 1fr; }
+      .featured-tag { min-height: auto; }
+      .summary-box p { font-size: 17px; }
+    }
   </style>
 </head>
 <body>
@@ -187,7 +238,12 @@ function renderPage(report) {
             <div class="type-kicker">你的主类型</div>
             <div class="type-name">${escapeHtml(title)}</div>
             <div class="match">匹配度 ${escapeHtml(report.secondary_type_match || "")}%</div>
-            <div class="type-subtitle">${summary}</div>
+            <div class="summary-box">
+              <div class="summary-kicker">Agent一句定性</div>
+              <p>${summary}</p>
+            </div>
+            <div class="featured-tags">${featuredTags(report.hidden_tags || [])}</div>
+            <div class="type-subtitle">这些不是顺手加的小标签，而是我翻完旧账之后给你钉下来的三枚章。</div>
             <div class="tag-row">${tags(report.hidden_tags || [])}</div>
           </div>
         </div>

@@ -25,6 +25,20 @@ def format_tags(tags: list[str]) -> str:
     return "".join(f'<span class="tag">{esc(tag)}</span>' for tag in tags)
 
 
+def format_featured_tags(tags: list[str]) -> str:
+    featured = []
+    for index, tag in enumerate(tags[:3], start=1):
+        featured.append(
+            f"""
+            <article class="featured-tag featured-tag-{index}">
+              <div class="featured-tag-kicker">Agent盖章 {index:02d}</div>
+              <div class="featured-tag-name">{esc(tag)}</div>
+            </article>
+            """
+        )
+    return "\n".join(featured)
+
+
 def format_scores(scores: dict[str, object]) -> str:
     labels = {
         "push_load": "压活强度",
@@ -96,7 +110,6 @@ def format_dimension_list(scores: dict[str, object]) -> str:
 
 def build_html(data: dict[str, object]) -> str:
     title = f'{data.get("selected_original_type", "")} + {data.get("derived_secondary_type", "")}'
-    share_caption = str(data.get("share_caption", "")).replace("`", "'")
     narrative = str(data.get("narrative", "")).strip()
     narrative_html = "<br />\n".join(esc(line) for line in narrative.splitlines() if line.strip())
     summary = str(data.get("summary", "")).replace("\n", "<br />\n")
@@ -238,6 +251,76 @@ def build_html(data: dict[str, object]) -> str:
       font-size: 13px;
       font-weight: 700;
     }}
+    .featured-tags {{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }}
+    .featured-tag {{
+      padding: 14px 12px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(77, 106, 83, 0.12);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), rgba(255,255,255,0.45) 55%),
+        linear-gradient(135deg, rgba(112, 151, 120, 0.18), rgba(230, 242, 232, 0.95));
+      box-shadow: 0 10px 24px rgba(77, 106, 83, 0.08);
+      min-height: 94px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }}
+    .featured-tag-kicker {{
+      font-size: 11px;
+      letter-spacing: .08em;
+      color: rgba(77, 106, 83, 0.72);
+      text-transform: uppercase;
+      font-weight: 700;
+    }}
+    .featured-tag-name {{
+      margin-top: 10px;
+      font-size: clamp(18px, 4.6vw, 24px);
+      line-height: 1.1;
+      font-weight: 900;
+      color: #203127;
+      word-break: break-all;
+    }}
+    .featured-tag-1 {{
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), rgba(255,255,255,0.4) 55%),
+        linear-gradient(135deg, rgba(247, 222, 184, 0.9), rgba(255, 245, 226, 0.95));
+    }}
+    .featured-tag-2 {{
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), rgba(255,255,255,0.4) 55%),
+        linear-gradient(135deg, rgba(206, 233, 216, 0.92), rgba(240, 250, 244, 0.95));
+    }}
+    .featured-tag-3 {{
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), rgba(255,255,255,0.4) 55%),
+        linear-gradient(135deg, rgba(218, 227, 245, 0.92), rgba(244, 247, 255, 0.95));
+    }}
+    .summary-box {{
+      margin-top: 18px;
+      padding: 16px 16px 18px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #f7fbf8, #eef6f0);
+      border: 1px solid var(--line);
+    }}
+    .summary-kicker {{
+      font-size: 12px;
+      letter-spacing: .08em;
+      color: var(--accent-strong);
+      margin-bottom: 8px;
+      font-weight: 800;
+    }}
+    .summary-box p {{
+      margin: 0;
+      color: #24352a;
+      font-size: 18px;
+      line-height: 1.65;
+      font-weight: 700;
+    }}
     .analysis-box h3, .dim-box h3, .chronicle-box h3 {{
       font-size: 16px;
       margin-bottom: 12px;
@@ -322,6 +405,15 @@ def build_html(data: dict[str, object]) -> str:
       .result-top {{
         grid-template-columns: 1fr;
       }}
+      .featured-tags {{
+        grid-template-columns: 1fr;
+      }}
+      .featured-tag {{
+        min-height: auto;
+      }}
+      .summary-box p {{
+        font-size: 17px;
+      }}
     }}
   </style>
 </head>
@@ -338,7 +430,14 @@ def build_html(data: dict[str, object]) -> str:
             <div class="type-kicker">你的主类型</div>
             <div class="type-name">{esc(title)}</div>
             <div class="match">匹配度 {esc(data.get("secondary_type_match", ""))}%</div>
-            <div class="type-subtitle">{summary}</div>
+            <div class="summary-box">
+              <div class="summary-kicker">Agent一句定性</div>
+              <p>{summary}</p>
+            </div>
+            <div class="featured-tags">
+              {format_featured_tags(list(data.get("hidden_tags", [])))}
+            </div>
+            <div class="type-subtitle">这些不是顺手加的小标签，而是我翻完旧账之后给你钉下来的三枚章。</div>
             <div class="tag-row">{format_tags(list(data.get("hidden_tags", [])))}</div>
           </div>
         </div>
