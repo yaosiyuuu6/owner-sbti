@@ -12,6 +12,10 @@ The first reply should be only:
 
 Do this unless the user already provided the original SBTI type in the same request.
 
+Do not ask the user to manually send logs, screenshots, examples, or evidence in the normal case.
+After the user provides the original SBTI type, directly inspect all same-user records already accessible in the current environment.
+If more history exists but is permission-gated, ask for permission instead of asking the user to paste records.
+
 Use this bundle from any local agent runtime that can:
 
 - read Markdown files
@@ -38,6 +42,7 @@ The repository explanation is optional and secondary. It must not replace step 3
 Do not ask the user to manually provide evidence if the agent can already inspect enough history in the active environment.
 Do not stop at the current context if the runtime can access older same-user threads or broader workspace traces.
 If broader same-user thread history is available only with permission, ask for that permission before continuing.
+Only ask the user for pasted records if the runtime truly exposes no broader usable history at all.
 
 Optional behavior if files are explicitly requested:
 
@@ -94,6 +99,7 @@ No matter which agent runtime is used, keep these rules fixed:
 - The result should feel like the original SBTI page, not a neutral audit.
 - The final default answer should be concise enough to send directly in chat.
 - The user should not need to gather evidence in normal usage.
+- The agent should directly consume all permitted same-user records before asking for any manual material.
 
 ## Recommended Prompt Skeleton
 

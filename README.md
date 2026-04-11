@@ -12,9 +12,13 @@ Your first reply should be only this question, unless the user already provided 
 
 Only after the user answers that question should you inspect accessible history and generate the result.
 
+Do not ask the user to send chat logs, examples, evidence, or past records in the normal case.
+
+Instead, directly inspect all same-user records you already have permission to access across all available threads, workspaces, and runtime history. If more history exists but is permission-gated, ask for permission, not for manual pasted records.
+
 An agent skill that turns the agent's accessible history into a SBTI-style owner judgment page.
 
-“Accessible history” here means all accessible same-user interaction data across all threads in the current runtime, not just the current visible context.
+“Accessible history” here means all accessible same-user interaction data across all threads, related workspaces, and runtime history in the current environment, not just the current visible context.
 
 It keeps the original SBTI presentation rhythm, asks the user to choose their original SBTI type first, then lets the agent derive one extra relationship type from its own accessible records.
 
@@ -79,8 +83,10 @@ As long as the agent can read files and run Python 3 locally, it can use the ski
 2. Tell it your original SBTI type.
 3. Let the agent automatically inspect all accessible threads first.
 4. If broader thread history is behind a permission boundary, let the agent ask for permission first.
-5. Only provide extra records if the environment truly does not expose enough history.
-6. Let the agent produce:
+5. Do not ask the user to manually send records in the normal case.
+6. If more history exists but is permission-gated, ask for permission.
+7. Only ask the user for pasted records if the environment truly exposes no usable broader history at all.
+8. Let the agent produce:
    - one extra relationship type
    - one-sentence description
    - one result page link

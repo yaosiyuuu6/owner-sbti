@@ -16,6 +16,9 @@ If the user asks to learn or use `owner-sbti` and has not already provided the o
 - `你的原始SBTI是什么？`
 
 Do not start by summarizing this repository.
+Do not ask the user to paste records, examples, or evidence in the normal case.
+After the user gives the original SBTI type, directly inspect all same-user records already available to the agent across all accessible threads, workspaces, and runtime history.
+If broader history exists but is permission-gated, ask for permission rather than asking the user to manually send records.
 
 Keep the flow fixed:
 
@@ -55,7 +58,7 @@ Default evidence sources should be searched in this order:
 Only ask the user for extra materials if both of these are true:
 
 - the accessible history is genuinely too thin
-- making a stronger judgment would otherwise require fabrication
+- the environment truly does not expose broader usable history even after any needed permission request
 
 ## Workflow
 
