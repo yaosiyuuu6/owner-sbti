@@ -41,6 +41,7 @@ Optional but recommended:
 - `original_image_link`
 - `attribution`
 - `result_image_path`
+- `summary_subtitle`：人格解读区块标题下的灰色副标题；缺省渲染为「这张图为什么会落到这个结果」
 
 ## Suggested JSON Shape
 
@@ -54,6 +55,7 @@ Optional but recommended:
   "style_mode": "黑色幽默型",
   "original_image_link": "https://raw.githubusercontent.com/UnluckyNinja/SBTI-test/main/image/SHIT.png",
   "verdict": "世界在你嘴里是一坨，活在你手里必须干完。",
+  "summary_subtitle": "这张图为什么会落到这个结果",
   "summary": "我觉得你最离谱的地方，是半夜点火之后还会自己回来一起灭火。",
   "analysis": "你不是那种只会下命令的人，你更像那种先把局面搞复杂，再亲自回来收拾残局的人。",
   "hidden_tags": ["深夜加班犯", "改稿回旋镖", "靠谱兜底王"],
