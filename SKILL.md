@@ -26,8 +26,9 @@ Keep the flow fixed:
 2. Automatically inspect the agent's own accessible records across all accessible threads and extract evidence.
 3. Derive only the secondary “主仆关系型” type.
 4. Write the report in first person with a clear style mode.
-5. Output `人格 + 一句话描述 + 图片`, with the original人格图嵌进最终 PNG 结果图。
-6. If the runtime supports a known IM channel, send the image there directly; otherwise fall back to the local PNG path.
+5. Build a report JSON object first.
+6. Output `人格 + 一句话描述 + 图片`, with the original人格图嵌进最终 PNG 结果图。
+7. If the runtime supports a known IM channel, send the image there directly; otherwise fall back to the local PNG path.
 
 This skill is designed to run locally with Python 3 and Pillow available. Do not assume browser automation, hosted services, or remote APIs are present.
 
@@ -154,9 +155,11 @@ A weak line is not:
 
 ### 6. Generate The Image
 
-Prefer [scripts/finalize_report.py](./scripts/finalize_report.py) as the default last mile. It validates the JSON, renders the local PNG result image, then automatically tries to deliver it to a supported IM channel before falling back to the local path.
+Use [scripts/finalize_report.py](./scripts/finalize_report.py) as the mandatory last mile. It validates the JSON, renders the local PNG result image with the bundled poster layout, then automatically tries to deliver it to a supported IM channel before falling back to the local path.
 
 `finalize_report.py` should try `lark`, `telegram`, and `whatsapp` delivery when those channels are configured in the runtime, and otherwise return the local PNG path.
+
+Do not improvise your own image layout. If the runtime cannot execute the bundled scripts, stop and report that the render step is blocked.
 
 If the runtime can display or upload local images directly, send the generated PNG to the user instead of only printing the path.
 

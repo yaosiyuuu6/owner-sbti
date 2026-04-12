@@ -11,9 +11,11 @@ Then:
 1. read `SKILL.md`
 2. read `references/portable-agent-spec.md`
 3. inspect all same-user records you can already access
-4. do not ask the user to paste logs or evidence unless broader history is truly unavailable
-5. if the current channel supports image sending, send the generated image directly
-6. otherwise return only:
+4. build a report JSON object and run `python3 scripts/finalize_report.py --input /path/to/report.json`
+5. do not design your own image layout and do not replace the bundled poster renderer
+6. do not ask the user to paste logs or evidence unless broader history is truly unavailable
+7. if the current channel supports image sending, send the generated image directly
+8. otherwise return only:
 
 ```text
 人格：

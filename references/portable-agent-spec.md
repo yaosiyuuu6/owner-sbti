@@ -35,9 +35,11 @@ Default behavior:
 2. Read `references/original-assets.md`, `references/relationship-types.md`, and `references/voice-guide.md`.
 3. Ask for the user-selected original SBTI type if missing, and do that before summarizing anything.
 4. Automatically inspect the agent's own accessible history, preferring all accessible same-user threads over only the current context window.
-5. Generate one local PNG result image.
-6. If a supported channel is configured, send the PNG directly to that chat.
-7. Otherwise return only `人格 + 描述 + 图片`.
+5. Build a report JSON object that matches `references/report-spec.md`.
+6. Generate the PNG only through the bundled renderer by running `python3 scripts/finalize_report.py --input /path/to/report.json`.
+7. Do not invent a custom layout or replace the bundled poster renderer.
+8. If a supported channel is configured, send the PNG directly to that chat.
+9. Otherwise return only `人格 + 描述 + 图片`.
 
 The repository explanation is optional and secondary. It must not replace step 3.
 
@@ -46,10 +48,7 @@ Do not stop at the current context if the runtime can access older same-user thr
 If broader same-user thread history is available only with permission, ask for that permission before continuing.
 Only ask the user for pasted records if the runtime truly exposes no broader usable history at all.
 
-Optional behavior if files are explicitly requested:
-
-1. Generate a report JSON object that matches [report-spec.md](./report-spec.md).
-2. Run the bundled scripts locally.
+The bundled renderer is mandatory, not optional. If the runtime cannot execute the bundled scripts, the correct behavior is to say the render step is blocked. Do not improvise a substitute image.
 
 The default local workflow is:
 
@@ -57,7 +56,7 @@ The default local workflow is:
 python3 scripts/finalize_report.py --input /path/to/report.json
 ```
 
-That command validates the payload, renders the final PNG, then tries to deliver it to `lark`, `telegram`, or `whatsapp` if those channels are configured. If not, it prints the local image path.
+That command validates the payload, renders the final PNG with the bundled poster layout, then tries to deliver it to `lark`, `telegram`, or `whatsapp` if those channels are configured. If not, it prints the local image path.
 
 The manual local workflow is:
 
@@ -81,7 +80,7 @@ No matter which agent runtime is used, keep these rules fixed:
 - The agent derives only the secondary relationship type.
 - The report voice stays first person from the agent.
 - Strong claims must be evidence-backed.
-- The result should feel like the original SBTI page, not a neutral audit.
+- The result image must come from the bundled renderer, not from an improvised replacement layout.
 - The final default answer should be concise enough to send directly in chat.
 - The user should not need to gather evidence in normal usage.
 - The agent should directly consume all permitted same-user records before asking for any manual material.

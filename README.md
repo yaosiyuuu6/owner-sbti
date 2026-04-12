@@ -56,8 +56,10 @@ Expected flow:
 
 1. first reply only: `你的原始SBTI是什么？`
 2. after the user answers, inspect all accessible same-user records
-3. do not ask the user to paste logs or evidence unless the environment truly exposes no broader history
-4. output only:
+3. build `report.json` and run `python3 scripts/finalize_report.py --input /path/to/report.json`
+4. do not replace the bundled poster renderer with your own improvised layout
+5. do not ask the user to paste logs or evidence unless the environment truly exposes no broader history
+6. output only:
 
 ```text
 人格：
@@ -102,6 +104,8 @@ Run:
 ```bash
 python3 scripts/finalize_report.py --input /path/to/report.json
 ```
+
+Do not hand-draw or redesign the output image in another layout. The bundled renderer is the required output path.
 
 ## Files
 
