@@ -33,22 +33,8 @@ mkdir -p ~/.claude/skills
 git clone https://github.com/yaosiyuuu6/owner-sbti.git ~/.claude/skills/owner-sbti
 ```
 
-Use the skill from `SKILL.md`.
-
 ### OpenClaw
-
-OpenClaw does not need a native skill registry for this repo.
-
-Use either:
-
-- the repository link
-- the local folder path
-
-Then point it to:
-
-- `SKILL.md`
-- `references/portable-agent-spec.md`
-- `OPENCLAW.md`
+Use the repository link or local folder path, then point it to `SKILL.md`, `references/portable-agent-spec.md`, and `OPENCLAW.md`.
 
 ## Usage
 
@@ -104,8 +90,6 @@ Run:
 ```bash
 python3 scripts/finalize_report.py --input /path/to/report.json
 ```
-
-Do not hand-draw or redesign the output image in another layout. The bundled renderer is the required output path.
 
 ## Files
 
