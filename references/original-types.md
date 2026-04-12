@@ -2,6 +2,9 @@
 
 The user chooses one original SBTI type before the agent starts the judgment. Preserve the exact chosen code.
 
+This list is not MBTI.
+Do not replace it with MBTI labels such as `INTJ`、`ENTP`、`INFP`.
+
 Available original types:
 
 - `CTRL`

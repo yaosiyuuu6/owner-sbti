@@ -41,11 +41,13 @@ Use the repository link or local folder path, then point it to `SKILL.md`, `refe
 Expected flow:
 
 1. first reply only: `你的原始SBTI是什么？`
-2. after the user answers, inspect all accessible same-user records
-3. build `report.json` and run `python3 scripts/finalize_report.py --input /path/to/report.json`
-4. do not replace the bundled poster renderer with your own improvised layout
-5. do not ask the user to paste logs or evidence unless the environment truly exposes no broader history
-6. output only:
+2. this is `SBTI`, not MBTI. Do not ask for `INTJ` / `ENTP` / `INFP`.
+3. use the original type codes from `references/original-types.md`, such as `LOVE-R`, `SHIT`, `CTRL`
+4. after the user answers, inspect all accessible same-user records
+5. build `report.json` and run `python3 scripts/finalize_report.py --input /path/to/report.json`
+6. do not replace the bundled poster renderer with your own improvised layout
+7. do not ask the user to paste logs or evidence unless the environment truly exposes no broader history
+8. output only:
 
 ```text
 人格：

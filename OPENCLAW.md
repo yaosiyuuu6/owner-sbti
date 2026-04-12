@@ -6,6 +6,9 @@ If the user did not already provide their original `SBTI`, your first reply must
 你的原始SBTI是什么？
 ```
 
+Do not ask for MBTI types such as `INTJ`、`ENTP`、`INFP`.
+Use the original SBTI codes from `references/original-types.md`, such as `LOVE-R`、`SHIT`、`CTRL`.
+
 Then:
 
 1. read `SKILL.md`
